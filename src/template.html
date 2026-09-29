@@ -384,10 +384,10 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
   countries.forEach((c) => {
     const cp = places.filter((p) => p.country === c);
     const clat = cp.reduce((a, p) => a + p.lat, 0) / cp.length, clon = cp.reduce((a, p) => a + p.lon, 0) / cp.length;
-    cp.forEach((p, i) => { p.dlat = clat + (p.lat - clat) * 4; p.dlon = clon + (p.lon - clon) * 4; if (p.dlat === clat && p.dlon === clon && cp.length > 1) p.dlon += (i - (cp.length - 1) / 2) * 0.5; });
+    cp.forEach((p, i) => { p.dlat = p.lat; p.dlon = p.lon; });
     for (let k = 0; k < 60; k++) for (const A of cp) for (const B of cp) {
       if (A === B) continue; let dx = B.dlon - A.dlon, dy = B.dlat - A.dlat; let d = Math.hypot(dx, dy); if (d < 1e-6) { dx = 1; dy = 0; d = 1e-6; }
-      const MIN = 2.2; if (d < MIN) { const m = (MIN - d) / 2; A.dlon -= dx / d * m; A.dlat -= dy / d * m; B.dlon += dx / d * m; B.dlat += dy / d * m; }
+      const MIN = 1.3; if (d < MIN) { const m = (MIN - d) / 2; A.dlon -= dx / d * m; A.dlat -= dy / d * m; B.dlon += dx / d * m; B.dlat += dy / d * m; }
     }
   });
   const match = (w) => (cs.serie === 0 || w.serie === SERIES[cs.serie]) && (cs.tone === 0 || w.tones.includes(TONES[cs.tone].id)) && (!cs.q || w.t.toLowerCase().includes(cs.q) || w.place.toLowerCase().includes(cs.q) || w.country.toLowerCase().includes(cs.q));
