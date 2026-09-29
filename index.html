@@ -171,8 +171,7 @@ nav.main a[aria-current="page"]{color:var(--ink);box-shadow:inset 0 -1.5px 0 var
 .qty{display:flex;align-items:center;gap:2px;padding:5px;border-radius:99px}
 .qty button{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center}
 .qty button:disabled{opacity:.3;cursor:default}
-.qty .qd{display:flex;gap:4px;padding:0 6px}
-.qty .qd span{border-radius:2px;box-sizing:border-box}
+.qty .qn{min-width:34px;text-align:center;font-family:var(--display);font-size:28px;line-height:1;font-variant-numeric:tabular-nums}
 .tray{position:absolute;left:50%;bottom:112px;transform:translateX(-50%);padding:16px 18px;border-radius:18px;display:flex;flex-direction:column;gap:12px;z-index:5;max-width:calc(100% - 32px)}
 .tray .opts{display:flex;gap:6px;flex-wrap:wrap}
 .opt{width:72px;padding:4px 0;display:flex;flex-direction:column;align-items:center;gap:8px;font-size:12px;color:#4a443c;position:relative}
@@ -228,10 +227,24 @@ nav.main a[aria-current="page"]{color:var(--ink);box-shadow:inset 0 -1.5px 0 var
 .contact .ln span:first-child{color:var(--muted);font-size:12px;letter-spacing:.1em;text-transform:uppercase;padding-top:3px}
 footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-bottom,0px));display:flex;justify-content:space-between;gap:16px;font-size:12px;color:var(--muted);border-top:1px solid var(--line)}
 @media (max-width:760px){.about{grid-template-columns:minmax(0,1fr)}}
+
+/* loaders: globo girando mientras cargan las fotos */
+#loader{position:fixed;inset:0;z-index:100;background:var(--paper);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;color:var(--ink);transition:opacity .6s ease,visibility .6s}
+#loader.done{opacity:0;visibility:hidden}
+#loader svg{width:64px;height:64px;animation:tilt 6s ease-in-out infinite}
+#loader span{font-family:var(--display);font-style:italic;font-size:24px;color:var(--muted)}
+@keyframes tilt{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+.ld{position:relative}
+.ld::before{content:"";position:absolute;left:50%;top:50%;width:30px;height:30px;margin:-15px 0 0 -15px;background:url("data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%239a9184%22%20stroke-width%3D%221.2%22%20aria-hidden%3D%22true%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%2210%22/%3E%3Cpath%20d%3D%22M2%2012h20M4%207h16M4%2017h16%22/%3E%3Cellipse%20cx%3D%2212%22%20cy%3D%2212%22%20ry%3D%2210%22%20rx%3D%2210%22%3E%3Canimate%20attributeName%3D%22rx%22%20values%3D%2210%3B0%3B10%22%20dur%3D%222.4s%22%20repeatCount%3D%22indefinite%22/%3E%3C/ellipse%3E%3Cellipse%20cx%3D%2212%22%20cy%3D%2212%22%20ry%3D%2210%22%20rx%3D%225%22%3E%3Canimate%20attributeName%3D%22rx%22%20values%3D%225%3B10%3B0%3B5%22%20keyTimes%3D%220%3B.25%3B.75%3B1%22%20dur%3D%222.4s%22%20repeatCount%3D%22indefinite%22/%3E%3C/ellipse%3E%3C/svg%3E") center/contain no-repeat;opacity:.9;transition:opacity .3s;pointer-events:none;z-index:0}
+.ld.ok::before{opacity:0}
+.ld img{position:relative;z-index:1;opacity:0;transition:opacity .5s ease}
+.ld.ok img{opacity:1}
+.piece .bx.ld img{position:absolute}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
+<div id="loader" role="status" aria-live="polite"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M4 7h16M4 17h16"/><ellipse cx="12" cy="12" ry="10" rx="10"><animate attributeName="rx" values="10;0;10" dur="2.4s" repeatCount="indefinite"/></ellipse><ellipse cx="12" cy="12" ry="10" rx="5"><animate attributeName="rx" values="5;10;0;5" keyTimes="0;.25;.75;1" dur="2.4s" repeatCount="indefinite"/></ellipse></svg><span>Cargando el atlas…</span></div>
 <header class="top">
   <a class="brand" href="#catalogo" id="brand">Josefina Goñi</a>
   <nav class="main">
@@ -280,7 +293,7 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
       <div class="dgroup right"><span class="eyebrow">Cuadros</span>
         <div class="qty glass">
           <button data-a="qty" data-v="-1" aria-label="Un cuadro menos"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"/></svg></button>
-          <div class="qd" id="qd"></div>
+          <span class="qn" id="qn" aria-live="polite">1</span>
           <button data-a="qty" data-v="1" aria-label="Un cuadro más"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
         </div>
       </div>
@@ -373,14 +386,14 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
   function renderGrid() {
     const sh = shownC();
     const ids = W.map((w, i) => i).filter((i) => match(W[i])).sort((a, b) => W[b].lat - W[a].lat);
-    $('cards').innerHTML = ids.length ? ids.map((i) => { const w = W[i]; return `<button class="card${i === sh ? ' act' : ''}" data-work="${i}" aria-label="${esc(w.t + ', ' + w.place)}"><span class="cc">${esc(w.coords)}</span><span class="ph"><img src="${w.sm}" alt="" loading="lazy"></span><span class="ct">${esc(w.t)}</span><span class="cp">${esc(w.place.split(',')[0])}</span></button>`; }).join('') : '<p class="empty">Ninguna obra coincide con esos filtros.</p>';
+    $('cards').innerHTML = ids.length ? ids.map((i) => { const w = W[i]; return `<button class="card${i === sh ? ' act' : ''}" data-work="${i}" aria-label="${esc(w.t + ', ' + w.place)}"><span class="cc">${esc(w.coords)}</span><span class="ph ld"><img src="${w.sm}" alt="" loading="lazy"></span><span class="ct">${esc(w.t)}</span><span class="cp">${esc(w.place.split(',')[0])}</span></button>`; }).join('') : '<p class="empty">Ninguna obra coincide con esos filtros.</p>';
   }
   function renderFicha() {
     const i = shownC(), w = W[i];
     const reg = regions.find((r) => r.name === w.region);
     const story = w.story ? `<p class="story">${esc(w.story)}</p>` : '';
     const group = reg.ids.length > 1 ? `<div style="display:flex;flex-direction:column;gap:8px"><span class="eyebrow mono">${reg.ids.length} obras en ${esc(reg.name)}</span><div class="group">${reg.ids.map((k) => `<button data-pick="${k}" aria-pressed="${k === i}" aria-label="Ver ${esc(W[k].t)}"><img src="${W[k].sm}" alt="" loading="lazy"></button>`).join('')}</div></div>` : '';
-    $('ficha').innerHTML = `<div class="pic"><img src="${w.sm}" alt="${esc(w.t)}"></div>${group}
+    $('ficha').innerHTML = `<div class="pic ld"><img src="${w.sm}" alt="${esc(w.t)}"></div>${group}
       <div style="display:flex;flex-direction:column;gap:8px"><span class="meta">N.º ${String(i + 1).padStart(2, '0')} · ${esc(w.coords)}</span><h2>${esc(w.t)}</h2><span class="place">${esc(w.place)}${w.year ? ' · ' + w.year : ''}${w.when ? ' · ' + esc(w.when) : ''}</span></div>
       ${w.text ? `<p class="phrase">“${esc(w.text)}”</p>` : ''}${story}
       <div class="tags"><span>Serie ${esc(w.serie || '—')}</span>${w.moods.map((m) => `<span>· ${esc(m)}</span>`).join('')}</div>
@@ -456,7 +469,7 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
       const frSt = isM ? `padding:${fcm * sc}px;background:${fr.bg};box-shadow:0 2px 3px rgba(0,0,0,.18),0 26px 44px -16px rgba(50,38,26,.45)` : `padding:0;border-right:${2.2 * sc}px solid ${eC};border-bottom:${2.2 * sc}px solid ${eD};box-shadow:0 26px 44px -16px rgba(50,38,26,.5)`;
       h += `<button class="piece${multi && i === ps.active ? ' act' : ''}" data-slot="${i}" aria-label="Lugar ${i + 1}: ${esc(w.t)}">
         <div class="ring"><div class="fr" style="${frSt}"><div class="mt" style="padding:${mcm * sc}px;background:${isM && mt.c ? mt.c : 'transparent'}">
-        <div class="bx" style="width:${BW}px;height:${BH}px"><img src="${w.img}" alt="" style="width:${ew}px;height:${eh}px;transform:translate(-50%,-50%) rotate(${r}deg)"></div></div></div></div>
+        <div class="bx ld" style="width:${BW}px;height:${BH}px"><img src="${w.img}" alt="" style="width:${ew}px;height:${eh}px;transform:translate(-50%,-50%) rotate(${r}deg)"></div></div></div></div>
         ${multi ? `<span class="pl">${i + 1} · ${esc(w.t)}</span>` : ''}</button>`;
     }
     $('comp').innerHTML = h;
@@ -485,8 +498,7 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
     const cr = ps.rot[ps.qty > 1 ? ps.active : 0];
     h += '<span class="vr"></span>' + sec('img', '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="1"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-8 9"/></svg>', 'Imagen', `${ps.fit === 'cover' ? 'Llenar' : 'Completa'} · ${cr}°`);
     $('bar').innerHTML = h;
-    const box = ps.orient === 'h' ? [14, 10] : ps.orient === 'q' ? [12, 12] : [10, 14];
-    $('qd').innerHTML = [0, 1, 2].map((k) => `<span style="width:${box[0]}px;height:${box[1]}px;${k < ps.qty ? 'background:var(--ink);border:1.5px solid var(--ink)' : 'border:1.5px dashed #b3aa9d'}"></span>`).join('');
+    $('qn').textContent = ps.qty;
     const qb = document.querySelectorAll('[data-a="qty"]'); qb[0].disabled = ps.qty === 1; qb[1].disabled = ps.qty === 3;
     renderTray();
   }
@@ -527,7 +539,7 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
       $('plist').innerHTML = W.map((w, i) => {
         const where = placed.map((p, k) => (p === i ? k + 1 : 0)).filter(Boolean);
         const tb = w.fmt === 'h' ? [54, 36] : [36, 54];
-        return `<button class="prow${where.length ? ' on' : ''}" data-w="${i}"><span class="th"><img src="${w.sm}" alt="" loading="lazy" style="width:${tb[0]}px;height:${tb[1]}px"></span><span class="pt"><b>${esc(w.t)}</b><small>${esc([w.serie, w.place.split(',')[0], w.year].filter(Boolean).join(' · '))}</small></span>${where.length ? `<span class="badge">${multi ? where.join(' · ') : '✓'}</span>` : ''}</button>`;
+        return `<button class="prow${where.length ? ' on' : ''}" data-w="${i}"><span class="th ld"><img src="${w.sm}" alt="" loading="lazy" style="width:${tb[0]}px;height:${tb[1]}px"></span><span class="pt"><b>${esc(w.t)}</b><small>${esc([w.serie, w.place.split(',')[0], w.year].filter(Boolean).join(' · '))}</small></span>${where.length ? `<span class="badge">${multi ? where.join(' · ') : '✓'}</span>` : ''}</button>`;
       }).join('');
     } else {
       $('phelp').textContent = 'Combinaciones pensadas para colgar juntas. Elegí una y después cambiá lo que quieras.';
@@ -593,7 +605,21 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
     $('foot').textContent = `© ${new Date().getFullYear()} ${C.name}`;
   }
 
-  renderAbout(); setView('map'); route();
+
+  /* ---------- carga de imágenes ---------- */
+  const markLoaded = (img) => { const p = img.closest('.ld'); if (p) p.classList.add('ok'); };
+  document.addEventListener('load', (e) => { if (e.target.tagName === 'IMG') markLoaded(e.target); }, true);
+  document.addEventListener('error', (e) => { if (e.target.tagName === 'IMG') markLoaded(e.target); }, true);
+  new MutationObserver(() => document.querySelectorAll('.ld:not(.ok) img').forEach((i) => { if (i.complete && i.naturalWidth) markLoaded(i); }))
+    .observe(document.body, { childList: true, subtree: true });
+  function hideLoader() {
+    const view = document.querySelector('main:not([hidden])');
+    const imgs = [...(view ? view.querySelectorAll('.ficha img, .piece img') : [])];
+    const wait = imgs.map((i) => (i.complete ? Promise.resolve() : new Promise((r) => { i.addEventListener('load', r, { once: true }); i.addEventListener('error', r, { once: true }); })));
+    Promise.race([Promise.all(wait), new Promise((r) => setTimeout(r, 6000))]).then(() => setTimeout(() => $('loader').classList.add('done'), 250));
+  }
+
+  renderAbout(); setView('map'); route(); hideLoader();
 })();
 </script>
 </body>
