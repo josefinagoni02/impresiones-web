@@ -465,10 +465,11 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
       const n = c.items.length; const x = c.items.reduce((a, t) => a + t.x, 0) / n, y = c.items.reduce((a, t) => a + t.y, 0) / n;
       const ps = c.items.map((t) => t.p); const hits = c.items.flatMap((t) => t.hits);
       const reg = ps.every((p) => p.region === ps[0].region) && ps[0].region !== ps[0].country && mv.z >= 1.9 ? ps[0].region : null;
-      const label = ps.length === 1 ? ps[0].short : reg || ps[0].country;
-      const sub = ps.length === 1 ? (ps[0].region !== ps[0].country ? `${ps[0].region} · ${ps[0].country}` : ps[0].country) : reg ? `${ps[0].country} · ${ps.length} lugares` : `${ps.length} lugares`;
+      const far = mv.z < 1.9;
+      const label = ps.length === 1 ? (far ? ps[0].country : ps[0].short) : reg || ps[0].country;
+      const sub = ps.length === 1 ? (far ? '1 lugar' : ps[0].region !== ps[0].country ? `${ps[0].region} · ${ps[0].country}` : ps[0].country) : reg ? `${ps[0].country} · ${ps.length} lugares` : `${ps.length} lugares`;
       const canRegion = !reg && ps.length > 1 && ps.every((p) => p.region === ps[0].region) && ps[0].region !== ps[0].country;
-      return { x, y, ps, hits, label, sub, canRegion };
+      return { x, y, ps, hits, label, sub, canRegion, farSingle: far && ps.length === 1 };
     });
     // separar pines de distintos países que se pisan
     for (let k = 0; k < 20; k++) for (const A of res) for (const B of res) {
@@ -578,7 +579,8 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
     else if (t.dataset.cl) {
       const c = lastClusters[+t.dataset.cl]; if (!c) return;
       cs.sel = c.hits.includes(cs.sel) && c.ps.length === 1 ? c.hits[(c.hits.indexOf(cs.sel) + 1) % c.hits.length] : c.hits[0]; cs.hover = null;
-      if (c.canRegion) animateTo({ z: Math.max(2.4, mv.z * 1.6), cx: toLon(c.x), cy: toLat(c.y) });
+      if (c.farSingle) animateTo({ z: 2.4, cx: toLon(c.x), cy: toLat(c.y) });
+      else if (c.canRegion) animateTo({ z: Math.max(2.4, mv.z * 1.6), cx: toLon(c.x), cy: toLat(c.y) });
       else if (c.ps.length > 1) fitPlaces(c.ps);
       else if (mob()) setTimeout(() => $('ficha').scrollIntoView({ behavior: 'smooth' }), 30);
     }
