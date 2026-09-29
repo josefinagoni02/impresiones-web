@@ -453,7 +453,7 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
     for (const ctry of [...new Set(pts.map((o) => o.p.country))]) {
       const cp = pts.filter((o) => o.p.country === ctry);
       const spread = Math.max(0, ...cp.flatMap((a) => cp.map((b) => Math.hypot(a.x - b.x, a.y - b.y))));
-      if (spread < 90) { out.push({ items: cp }); continue; }
+      if (spread < 90 || mv.z < 1.9) { out.push({ items: cp }); continue; }
       const loc = [];
       for (const o of cp.sort((a, b) => b.hits.length - a.hits.length)) {
         const c = loc.find((c) => c.items.some((t) => Math.hypot(t.x - o.x, t.y - o.y) < 52));
