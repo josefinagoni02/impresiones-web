@@ -67,7 +67,18 @@ nav.main a[aria-current="page"]{color:var(--ink);box-shadow:inset 0 -1.5px 0 var
 .count{margin-top:auto;font-family:var(--mono);font-size:12px;color:var(--muted)}
 .center{position:relative;min-width:0;overflow:hidden}
 .viewtoggle{position:absolute;right:20px;top:18px;z-index:5}
-.map{position:absolute;inset:0}
+.map{position:absolute;inset:0;overflow:hidden;cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.map.drag{cursor:grabbing}
+.map canvas{position:absolute;inset:0;width:100%;height:100%}
+#pins{position:absolute;inset:0;pointer-events:none}
+#pins .pin{pointer-events:auto}
+.pin .lbl small{display:block;font-family:var(--mono);font-style:normal;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-top:2px}
+.zoomctl{position:absolute;left:20px;bottom:20px;display:flex;flex-direction:column;border-radius:12px;overflow:hidden;z-index:3}
+.zoomctl button{width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:20px;line-height:1}
+.zoomctl button+button{border-top:1px solid var(--line)}
+.zoomctl button:disabled{opacity:.3;cursor:default}
+.maphint{position:absolute;right:24px;bottom:20px;font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--faint);pointer-events:none}
+@media (hover:none){.maphint{display:none}}
 .map .gl{position:absolute;background:#dcd4c6}
 .map .gl.v{top:24px;bottom:24px;width:1px}
 .map .gl.h{left:24px;right:24px;height:1px}
@@ -75,10 +86,11 @@ nav.main a[aria-current="page"]{color:var(--ink);box-shadow:inset 0 -1.5px 0 var
 .map .gt{position:absolute;font-family:var(--mono);font-size:10px;color:var(--faint);pointer-events:none}
 .map .ocean{position:absolute;font-family:var(--display);font-style:italic;font-size:22px;color:#b1a898;pointer-events:none;white-space:nowrap}
 .map .scale{position:absolute;right:28px;bottom:22px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--faint)}
-.pin{position:absolute;width:44px;height:44px;margin:-22px 0 0 -22px;transition:opacity .3s}
+.pin{position:absolute;width:44px;height:44px;margin:-22px 0 0 -22px}
 .pin .ring{position:absolute;left:50%;top:50%;border-radius:50%;transform:translate(-50%,-50%);border:1px solid rgba(29,27,25,.35);transition:all .35s}
 .pin .core{position:absolute;left:50%;top:50%;border-radius:50%;transform:translate(-50%,-50%);background:var(--ink);color:var(--on-ink);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px}
-.pin .lbl{position:absolute;top:50%;transform:translateY(-50%);white-space:nowrap;font-family:var(--display);font-style:italic;font-size:22px;color:var(--muted);transition:color .3s}
+.pin .lbl{position:absolute;top:50%;transform:translateY(-50%);white-space:nowrap;font-family:var(--display);font-style:italic;font-size:22px;line-height:1;color:var(--muted);transition:color .3s;text-align:left;text-shadow:0 0 6px var(--paper),0 0 2px var(--paper)}
+.pin.l .lbl{text-align:right}
 .pin.l .lbl{right:44px}.pin.r .lbl{left:44px}
 .pin.act .ring{border-color:var(--ink);background:rgba(29,27,25,.06)}
 .pin.act .lbl{color:var(--ink)}
@@ -271,7 +283,9 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
       <button id="vMap" aria-pressed="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg>Mapa</button>
       <button id="vGrid" aria-pressed="false"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="4" y="4" width="7" height="7"/><rect x="13" y="4" width="7" height="7"/><rect x="4" y="13" width="7" height="7"/><rect x="13" y="13" width="7" height="7"/></svg>Grilla N→S</button>
     </div>
-    <div class="map" id="map"></div>
+    <div class="map" id="map"><canvas id="geo" aria-hidden="true"></canvas><div id="pins"></div>
+      <div class="zoomctl glass"><button id="zin" aria-label="Acercar">+</button><button id="zout" aria-label="Alejar">−</button><button id="zhome" aria-label="Ver todo el mapa"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button></div>
+      <span class="maphint">Rueda o pellizco para acercar · arrastrá para moverte</span></div>
     <div class="grid" id="grid" hidden><div class="ns"><span>N</span><i></i><span>S</span></div><div class="cards" id="cards"></div></div>
   </div>
   <aside class="ficha" id="ficha" aria-live="polite"></aside>
@@ -313,7 +327,7 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
 </section>
 <footer class="bottom"><span id="foot"></span><span>Impresiones fotográficas · marco o canvas</span></footer>
 
-<script id="data" type="application/json">{"works": [{"id": "ejemplo", "t": "Hojitas", "serie": "Jardin", "year": 2026, "when": "Primavera", "place": "Tigre, Buenos Aires", "region": "Tigre", "lat": -34.43, "lon": -58.58, "coords": "34°26′S 58°35′O", "fmt": "h", "ar": 1.5, "img": "img/img-8170.jpg", "sm": "img/img-8170-sm.jpg", "edge": "#1e1f12", "edgeD": "#18180e", "tones": ["verde"], "moods": ["calma", "movimiento"], "text": "", "story": ""}, {"id": "7m99oodxvws98zthk22s", "t": "Flore-SER", "serie": "Jardin", "year": 2026, "when": "Primavera", "place": "Tigre, Buenos Aires", "region": "Tigre", "lat": -34.43, "lon": -58.58, "coords": "34°26′S 58°35′O", "fmt": "h", "ar": 1.5, "img": "img/img-8211.jpg", "sm": "img/img-8211-sm.jpg", "edge": "#171514", "edgeD": "#121010", "tones": ["oscuro", "magenta"], "moods": ["movimiento"], "text": "Creciendo, en constante movimiento.", "story": ""}, {"id": "v6zu1fnsragvl1bk6tf3", "t": "Espíritu", "serie": "Jardin", "year": 2026, "when": "Primavera", "place": "Tigre, Buenos Aires", "region": "Tigre", "lat": -34.43, "lon": -58.58, "coords": "34°26′S 58°35′O", "fmt": "h", "ar": 1.5, "img": "img/img-8150.jpg", "sm": "img/img-8150-sm.jpg", "edge": "#131311", "edgeD": "#0f0f0d", "tones": ["oscuro"], "moods": ["movimiento"], "text": "", "story": ""}, {"id": "5v5q9rmd4a7l716ln7lj", "t": "Arcoiris", "serie": "Atardecer", "year": 2026, "when": "Atardecer", "place": "Santa Teresa, Costa Rica", "region": "Costa Rica", "lat": 9.64, "lon": -85.17, "coords": "9°38′N 85°10′O", "fmt": "h", "ar": 1.5, "img": "img/img-4581.jpg", "sm": "img/img-4581-sm.jpg", "edge": "#a7675b", "edgeD": "#855248", "tones": ["cálido"], "moods": ["calma"], "text": "Observando, somos creadores de la obra", "story": ""}, {"id": "tcfef9lt981iuam9v10g", "t": "Expansión Naranja", "serie": "Atardecer", "year": 2026, "when": "", "place": "Santa Teresa, Costa Rica", "region": "Costa Rica", "lat": 9.64, "lon": -85.17, "coords": "9°38′N 85°10′O", "fmt": "v", "ar": 0.6667, "img": "img/img-5085.jpg", "sm": "img/img-5085-sm.jpg", "edge": "#744016", "edgeD": "#5c3311", "tones": ["cálido"], "moods": ["calma"], "text": "", "story": ""}, {"id": "v93yowcrwlio0occ4g5k", "t": "Inmersos", "serie": "Atardecer", "year": null, "when": "", "place": "Playa Venao, Panamá", "region": "Panamá", "lat": 7.43, "lon": -80.19, "coords": "7°26′N 80°11′O", "fmt": "v", "ar": 0.6667, "img": "img/img-2910.jpg", "sm": "img/img-2910-sm.jpg", "edge": "#4d270b", "edgeD": "#3d1f08", "tones": ["cálido"], "moods": ["calma"], "text": "", "story": ""}, {"id": "wu83h3kot0ow2doi3nze", "t": "Infinidad Acuatica", "serie": "Mar", "year": null, "when": "", "place": "San Blas, Panamá", "region": "Panamá", "lat": 9.57, "lon": -78.83, "coords": "9°34′N 78°50′O", "fmt": "h", "ar": 1.5, "img": "img/img-2301.jpg", "sm": "img/img-2301-sm.jpg", "edge": "#5a646e", "edgeD": "#485058", "tones": ["azul"], "moods": ["inmensidad", "nostalgia"], "text": "", "story": ""}, {"id": "d8xsnhwkibspm1gs7ye7", "t": "Infimos", "serie": "Mar", "year": 2025, "when": "", "place": "San Francisco, California", "region": "California", "lat": 37.77, "lon": -122.42, "coords": "37°46′N 122°25′O", "fmt": "v", "ar": 0.6667, "img": "img/img-1695.jpg", "sm": "img/img-1695-sm.jpg", "edge": "#5f6669", "edgeD": "#4c5154", "tones": ["azul"], "moods": ["inmensidad"], "text": "Bailar con confianza, ante tanta inmensidad.", "story": ""}, {"id": "segvv79u0fh8eog51isr", "t": "Navegar", "serie": "Mar", "year": 2026, "when": "", "place": "San Blas, Panamá", "region": "Panamá", "lat": 9.57, "lon": -78.83, "coords": "9°34′N 78°50′O", "fmt": "v", "ar": 0.6667, "img": "img/img-2220.jpg", "sm": "img/img-2220-sm.jpg", "edge": "#8a9db3", "edgeD": "#6e7d8f", "tones": ["azul"], "moods": ["nostalgia"], "text": "", "story": ""}, {"id": "l3hwykl52erjsmdvd342", "t": "Huellas", "serie": "Playa", "year": null, "when": "", "place": "Puerto Viejo, Costa Rica", "region": "Costa Rica", "lat": 9.66, "lon": -82.75, "coords": "9°40′N 82°45′O", "fmt": "v", "ar": 0.6667, "img": "img/img-2618.jpg", "sm": "img/img-2618-sm.jpg", "edge": "#817d79", "edgeD": "#676460", "tones": ["arena"], "moods": ["silencio"], "text": "", "story": ""}, {"id": "2hh2komrnwdbq5esv0x3", "t": "Evolución", "serie": "Mar", "year": null, "when": "", "place": "Playa Venao, Panamá", "region": "Panamá", "lat": 7.43, "lon": -80.19, "coords": "7°26′N 80°11′O", "fmt": "h", "ar": 1.5, "img": "img/img-2631.jpg", "sm": "img/img-2631-sm.jpg", "edge": "#3f3935", "edgeD": "#322d2a", "tones": ["oscuro"], "moods": ["silencio"], "text": "", "story": ""}, {"id": "1cru13s1yb15cx7n9nme", "t": "Versiones que conviven", "serie": "Postal", "year": null, "when": "", "place": "Río de Janeiro, Brasil", "region": "Río de Janeiro", "lat": -22.91, "lon": -43.17, "coords": "22°55′S 43°10′O", "fmt": "h", "ar": 1.5, "img": "img/img-6921.jpg", "sm": "img/img-6921-sm.jpg", "edge": "#47494d", "edgeD": "#383a3d", "tones": ["oscuro"], "moods": ["silencio"], "text": "", "story": ""}, {"id": "6kw532zf5z31ys35lora", "t": "Tantos ángulos", "serie": "Postal", "year": null, "when": "", "place": "Golden Gate, California", "region": "California", "lat": 37.82, "lon": -122.48, "coords": "37°49′N 122°29′O", "fmt": "v", "ar": 0.6667, "img": "img/img-1708.jpg", "sm": "img/img-1708-sm.jpg", "edge": "#575658", "edgeD": "#454446", "tones": ["cálido"], "moods": ["calma", "inmensidad", "nostalgia"], "text": "", "story": ""}, {"id": "krk9gi2kcvnhruij2sq1", "t": "Portales", "serie": "", "year": null, "when": "", "place": "Isla Tortuga, Costa Rica", "region": "Costa Rica", "lat": 9.77, "lon": -84.89, "coords": "9°46′N 84°53′O", "fmt": "v", "ar": 0.6667, "img": "img/img-3407.jpg", "sm": "img/img-3407-sm.jpg", "edge": "#525554", "edgeD": "#414443", "tones": ["azul"], "moods": [], "text": "", "story": ""}, {"id": "wno9w0kaa0o40x0wevrn", "t": "Agua-rela", "serie": "Agua", "year": null, "when": "", "place": "Tigre, Buenos Aires", "region": "Tigre", "lat": -34.43, "lon": -58.58, "coords": "34°26′S 58°35′O", "fmt": "h", "ar": 1.5, "img": "img/img-8106.jpg", "sm": "img/img-8106-sm.jpg", "edge": "#8e636e", "edgeD": "#714f58", "tones": ["magenta"], "moods": [], "text": "", "story": ""}], "config": {"name": "Josefina Goñi", "bio": "El atlas de mi viaje evolutivo, captura diversos rincones del mundo que me resonaron alguna vez.\nUn pedacito del mundo en mi mapa personal.", "whatsapp": "+5491153483183", "instagram": "josefinagoni__", "email": "josefinagoni02@gmail.com", "tagline": ""}, "sets": [{"name": "Díptico Jardin", "desc": "Hojitas + Flore-SER · horizontal 75×50", "works": [0, 1], "orient": "h", "frame": "negro", "mat": "sin"}, {"name": "Díptico Atardecer", "desc": "Expansión Naranja + Inmersos · vertical 50×75", "works": [4, 5], "orient": "v", "frame": "roble", "mat": "blanco"}], "tones": [{"id": null, "label": "Todos los tonos", "c": "conic-gradient(#4f7f95,#c9ae83,#c9683f,#a8437a,#6f8a5a,#26303a,#d9dedb,#4f7f95)"}, {"id": "azul", "label": "Azul", "c": "#4f7f95"}, {"id": "arena", "label": "Arena", "c": "#c9ae83"}, {"id": "cálido", "label": "Cálido", "c": "#c9683f"}, {"id": "magenta", "label": "Magenta", "c": "#a8437a"}, {"id": "verde", "label": "Verde", "c": "#6f8a5a"}, {"id": "oscuro", "label": "Oscuro", "c": "#26303a"}], "extent": {"lat0": 46, "lat1": -44, "lon0": -132.48000000000002, "lon1": -33.17}, "oceans": [{"name": "Océano Pacífico", "lat": -8, "lon": -112}, {"name": "Océano Atlántico", "lat": 24, "lon": -68}]}</script>
+<script id="data" type="application/json">{"works": [{"id": "ejemplo", "t": "Hojitas", "serie": "Jardin", "year": 2026, "when": "Primavera", "place": "Tigre, Buenos Aires, Argentina", "short": "Tigre", "country": "Argentina", "lat": -34.4264, "lon": -58.5796, "coords": "34°26′S 58°35′O", "fmt": "h", "ar": 1.5, "img": "img/img-8170.jpg", "sm": "img/img-8170-sm.jpg", "edge": "#1e1f12", "edgeD": "#18180e", "tones": ["verde"], "moods": ["calma", "movimiento"], "text": "", "story": ""}, {"id": "7m99oodxvws98zthk22s", "t": "Flore-SER", "serie": "Jardin", "year": 2026, "when": "Primavera", "place": "Tigre, Buenos Aires, Argentina", "short": "Tigre", "country": "Argentina", "lat": -34.4264, "lon": -58.5796, "coords": "34°26′S 58°35′O", "fmt": "h", "ar": 1.5, "img": "img/img-8211.jpg", "sm": "img/img-8211-sm.jpg", "edge": "#171514", "edgeD": "#121010", "tones": ["oscuro", "magenta"], "moods": ["movimiento"], "text": "Creciendo, en constante movimiento.", "story": ""}, {"id": "v6zu1fnsragvl1bk6tf3", "t": "Espíritu", "serie": "Jardin", "year": 2026, "when": "Primavera", "place": "Tigre, Buenos Aires, Argentina", "short": "Tigre", "country": "Argentina", "lat": -34.4264, "lon": -58.5796, "coords": "34°26′S 58°35′O", "fmt": "h", "ar": 1.5, "img": "img/img-8150.jpg", "sm": "img/img-8150-sm.jpg", "edge": "#131311", "edgeD": "#0f0f0d", "tones": ["oscuro"], "moods": ["movimiento"], "text": "", "story": ""}, {"id": "5v5q9rmd4a7l716ln7lj", "t": "Arcoiris", "serie": "Atardecer", "year": 2026, "when": "Atardecer", "place": "Santa Teresa, Costa Rica", "short": "Santa Teresa", "country": "Costa Rica", "lat": 9.6436, "lon": -85.1683, "coords": "9°39′N 85°10′O", "fmt": "h", "ar": 1.5, "img": "img/img-4581.jpg", "sm": "img/img-4581-sm.jpg", "edge": "#a7675b", "edgeD": "#855248", "tones": ["cálido"], "moods": ["calma"], "text": "Observando, somos creadores de la obra", "story": ""}, {"id": "tcfef9lt981iuam9v10g", "t": "Expansión Naranja", "serie": "Atardecer", "year": 2026, "when": "", "place": "Santa Teresa, Costa Rica", "short": "Santa Teresa", "country": "Costa Rica", "lat": 9.6436, "lon": -85.1683, "coords": "9°39′N 85°10′O", "fmt": "v", "ar": 0.6667, "img": "img/img-5085.jpg", "sm": "img/img-5085-sm.jpg", "edge": "#744016", "edgeD": "#5c3311", "tones": ["cálido"], "moods": ["calma"], "text": "", "story": ""}, {"id": "v93yowcrwlio0occ4g5k", "t": "Inmersos", "serie": "Atardecer", "year": null, "when": "", "place": "Playa Venao, Panamá", "short": "Playa Venao", "country": "Panamá", "lat": 7.4337, "lon": -80.1914, "coords": "7°26′N 80°11′O", "fmt": "v", "ar": 0.6667, "img": "img/img-2910.jpg", "sm": "img/img-2910-sm.jpg", "edge": "#4d270b", "edgeD": "#3d1f08", "tones": ["cálido"], "moods": ["calma"], "text": "", "story": ""}, {"id": "wu83h3kot0ow2doi3nze", "t": "Infinidad Acuatica", "serie": "Mar", "year": null, "when": "", "place": "San Blas, Panamá", "short": "San Blas", "country": "Panamá", "lat": 9.5594, "lon": -78.9481, "coords": "9°34′N 78°57′O", "fmt": "h", "ar": 1.5, "img": "img/img-2301.jpg", "sm": "img/img-2301-sm.jpg", "edge": "#5a646e", "edgeD": "#485058", "tones": ["azul"], "moods": ["inmensidad", "nostalgia"], "text": "", "story": ""}, {"id": "d8xsnhwkibspm1gs7ye7", "t": "Infimos", "serie": "Mar", "year": 2025, "when": "", "place": "San Francisco, California, EE.UU.", "short": "San Francisco", "country": "Estados Unidos", "lat": 37.7599, "lon": -122.5107, "coords": "37°46′N 122°31′O", "fmt": "v", "ar": 0.6667, "img": "img/img-1695.jpg", "sm": "img/img-1695-sm.jpg", "edge": "#5f6669", "edgeD": "#4c5154", "tones": ["azul"], "moods": ["inmensidad"], "text": "Bailar con confianza, ante tanta inmensidad.", "story": ""}, {"id": "segvv79u0fh8eog51isr", "t": "Navegar", "serie": "Mar", "year": 2026, "when": "", "place": "San Blas, Panamá", "short": "San Blas", "country": "Panamá", "lat": 9.5594, "lon": -78.9481, "coords": "9°34′N 78°57′O", "fmt": "v", "ar": 0.6667, "img": "img/img-2220.jpg", "sm": "img/img-2220-sm.jpg", "edge": "#8a9db3", "edgeD": "#6e7d8f", "tones": ["azul"], "moods": ["nostalgia"], "text": "", "story": ""}, {"id": "l3hwykl52erjsmdvd342", "t": "Huellas", "serie": "Playa", "year": null, "when": "", "place": "Puerto Viejo, Costa Rica", "short": "Puerto Viejo", "country": "Costa Rica", "lat": 9.6563, "lon": -82.7539, "coords": "9°39′N 82°45′O", "fmt": "v", "ar": 0.6667, "img": "img/img-2618.jpg", "sm": "img/img-2618-sm.jpg", "edge": "#817d79", "edgeD": "#676460", "tones": ["arena"], "moods": ["silencio"], "text": "", "story": ""}, {"id": "2hh2komrnwdbq5esv0x3", "t": "Evolución", "serie": "Mar", "year": null, "when": "", "place": "Playa Venao, Panamá", "short": "Playa Venao", "country": "Panamá", "lat": 7.4337, "lon": -80.1914, "coords": "7°26′N 80°11′O", "fmt": "h", "ar": 1.5, "img": "img/img-2631.jpg", "sm": "img/img-2631-sm.jpg", "edge": "#3f3935", "edgeD": "#322d2a", "tones": ["oscuro"], "moods": ["silencio"], "text": "", "story": ""}, {"id": "1cru13s1yb15cx7n9nme", "t": "Versiones que conviven", "serie": "Postal", "year": null, "when": "", "place": "Río de Janeiro, Brasil", "short": "Río de Janeiro", "country": "Brasil", "lat": -22.9068, "lon": -43.1729, "coords": "22°54′S 43°10′O", "fmt": "h", "ar": 1.5, "img": "img/img-6921.jpg", "sm": "img/img-6921-sm.jpg", "edge": "#47494d", "edgeD": "#383a3d", "tones": ["oscuro"], "moods": ["silencio"], "text": "", "story": ""}, {"id": "6kw532zf5z31ys35lora", "t": "Tantos ángulos", "serie": "Postal", "year": null, "when": "", "place": "Golden Gate, California, EE.UU.", "short": "Golden Gate", "country": "Estados Unidos", "lat": 37.8199, "lon": -122.4783, "coords": "37°49′N 122°29′O", "fmt": "v", "ar": 0.6667, "img": "img/img-1708.jpg", "sm": "img/img-1708-sm.jpg", "edge": "#575658", "edgeD": "#454446", "tones": ["cálido"], "moods": ["calma", "inmensidad", "nostalgia"], "text": "", "story": ""}, {"id": "krk9gi2kcvnhruij2sq1", "t": "Portales", "serie": "", "year": null, "when": "", "place": "Isla Tortuga, Costa Rica", "short": "Isla Tortuga", "country": "Costa Rica", "lat": 9.7736, "lon": -84.8895, "coords": "9°46′N 84°53′O", "fmt": "v", "ar": 0.6667, "img": "img/img-3407.jpg", "sm": "img/img-3407-sm.jpg", "edge": "#525554", "edgeD": "#414443", "tones": ["azul"], "moods": [], "text": "", "story": ""}, {"id": "wno9w0kaa0o40x0wevrn", "t": "Agua-rela", "serie": "Agua", "year": null, "when": "", "place": "Tigre, Buenos Aires, Argentina", "short": "Tigre", "country": "Argentina", "lat": -34.4264, "lon": -58.5796, "coords": "34°26′S 58°35′O", "fmt": "h", "ar": 1.5, "img": "img/img-8106.jpg", "sm": "img/img-8106-sm.jpg", "edge": "#8e636e", "edgeD": "#714f58", "tones": ["magenta"], "moods": [], "text": "", "story": ""}], "config": {"name": "Josefina Goñi", "bio": "El atlas de mi viaje evolutivo, captura diversos rincones del mundo que me resonaron alguna vez.\nUn pedacito del mundo en mi mapa personal.", "whatsapp": "+5491153483183", "instagram": "josefinagoni__", "email": "josefinagoni02@gmail.com", "tagline": ""}, "sets": [{"name": "Díptico Jardin", "desc": "Hojitas + Flore-SER · horizontal 75×50", "works": [0, 1], "orient": "h", "frame": "negro", "mat": "sin"}, {"name": "Díptico Atardecer", "desc": "Expansión Naranja + Inmersos · vertical 50×75", "works": [4, 5], "orient": "v", "frame": "roble", "mat": "blanco"}], "tones": [{"id": null, "label": "Todos los tonos", "c": "conic-gradient(#4f7f95,#c9ae83,#c9683f,#a8437a,#6f8a5a,#26303a,#d9dedb,#4f7f95)"}, {"id": "azul", "label": "Azul", "c": "#4f7f95"}, {"id": "arena", "label": "Arena", "c": "#c9ae83"}, {"id": "cálido", "label": "Cálido", "c": "#c9683f"}, {"id": "magenta", "label": "Magenta", "c": "#a8437a"}, {"id": "verde", "label": "Verde", "c": "#6f8a5a"}, {"id": "oscuro", "label": "Oscuro", "c": "#26303a"}], "extent": {"lat0": 46, "lat1": -44, "lon0": -132.51069999999999, "lon1": -33.1729}, "oceans": [{"name": "Océano Pacífico", "lat": -8, "lon": -112}, {"name": "Océano Atlántico", "lat": 24, "lon": -68}]}</script>
 <script>
 (() => {
   const D = JSON.parse(document.getElementById('data').textContent);
@@ -338,61 +352,173 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
   const TONES = D.tones;
   const SERIES = ['Todas'].concat([...new Set(W.map((w) => w.serie).filter(Boolean))]);
   const cs = { view: 'map', sel: 0, hover: null, serie: 0, tone: 0, q: '' };
-  const regions = [];
-  W.forEach((w, i) => { let r = regions.find((x) => x.name === w.region); if (!r) { r = { name: w.region, ids: [] }; regions.push(r); } r.ids.push(i); });
-  const E = D.extent;
-  const px = (lon) => (lon - E.lon0) / (E.lon1 - E.lon0);
-  const py = (lat) => (E.lat0 - lat) / (E.lat0 - E.lat1);
-  regions.forEach((r) => {
-    r.lat = r.ids.reduce((a, i) => a + W[i].lat, 0) / r.ids.length;
-    r.lon = r.ids.reduce((a, i) => a + W[i].lon, 0) / r.ids.length;
-    r.x = px(r.lon); r.y = py(r.lat);
-  });
-  for (let k = 0; k < 40; k++) { // separate crowded pins
-    for (let a = 0; a < regions.length; a++) for (let b = a + 1; b < regions.length; b++) {
-      const A = regions[a], B = regions[b]; const dx = B.x - A.x, dy = B.y - A.y; const d = Math.hypot(dx, dy) || 1e-6; const min = 0.065;
-      if (d < min) { const p = (min - d) / 2; A.x -= dx / d * p; A.y -= dy / d * p; B.x += dx / d * p; B.y += dy / d * p; }
-    }
-  }
-  regions.forEach((r) => { r.side = r.x > 0.62 ? 'l' : 'r'; });
-  // put the left-most of a close horizontal pair on the left
-  regions.forEach((r) => { const n = regions.find((o) => o !== r && Math.abs(o.y - r.y) < 0.06 && o.x > r.x && o.x - r.x < 0.12); if (n) { r.side = 'l'; n.side = 'r'; } });
-
-  const match = (w) => (cs.serie === 0 || w.serie === SERIES[cs.serie]) && (cs.tone === 0 || w.tones.includes(TONES[cs.tone].id)) && (!cs.q || w.t.toLowerCase().includes(cs.q) || w.place.toLowerCase().includes(cs.q));
+  const places = [];
+  W.forEach((w, i) => { let p = places.find((x) => x.short === w.short && x.country === w.country); if (!p) { p = { short: w.short, country: w.country, lat: w.lat, lon: w.lon, ids: [] }; places.push(p); } p.ids.push(i); });
+  const countries = [...new Set(places.map((p) => p.country))];
+  const match = (w) => (cs.serie === 0 || w.serie === SERIES[cs.serie]) && (cs.tone === 0 || w.tones.includes(TONES[cs.tone].id)) && (!cs.q || w.t.toLowerCase().includes(cs.q) || w.place.toLowerCase().includes(cs.q) || w.country.toLowerCase().includes(cs.q));
   const shownC = () => (cs.hover !== null ? cs.hover : cs.sel);
+  const placeOf = (i) => places.find((p) => p.ids.includes(i));
 
   function renderFilters() {
     $('fSeries').innerHTML = SERIES.map((s, i) => `<button class="chip" data-serie="${i}" aria-pressed="${i === cs.serie}">${esc(s)}</button>`).join('');
     $('fTones').innerHTML = TONES.map((t, i) => `<button class="dotbtn" data-tone="${i}" aria-pressed="${i === cs.tone}" aria-label="${esc(t.label)}" title="${esc(t.label)}"><span style="background:${t.c}"></span></button>`).join('');
     const n = W.filter(match).length;
-    $('count').textContent = `${n} de ${W.length} obras · ${regions.length} lugares`;
+    $('count').textContent = `${n} de ${W.length} obras · ${places.length} lugares · ${countries.length} países`;
   }
-  function renderMap() {
-    let h = '';
-    for (let lon = Math.ceil(E.lon0 / 20) * 20; lon <= E.lon1; lon += 20) { const x = px(lon) * 100; if (x < 3 || x > 97) continue; h += `<div class="gl v" style="left:${x}%"></div><span class="gt" style="left:calc(${x}% + 6px);top:28px">${Math.abs(lon)}°O</span>`; }
-    for (let lat = Math.floor(E.lat0 / 20) * 20; lat >= E.lat1; lat -= 20) { const y = py(lat) * 100; if (y < 3 || y > 97) continue; h += `<div class="gl h${lat === 0 ? ' eq' : ''}" style="top:${y}%"></div><span class="gt" style="left:28px;top:calc(${y}% - 16px)">${lat === 0 ? '0° · ECUADOR' : Math.abs(lat) + (lat > 0 ? '°N' : '°S')}</span>`; }
-    D.oceans.forEach((o) => { const x = px(o.lon), y = py(o.lat); if (x > 0.05 && x < 0.8 && y > 0.05 && y < 0.95) h += `<span class="ocean" style="left:${x * 100}%;top:${y * 100}%">${esc(o.name)}</span>`; });
-    const sh = shownC();
-    regions.forEach((r, ri) => {
-      const hits = r.ids.filter((i) => match(W[i])); const on = hits.length > 0; const act = r.ids.includes(sh); const multi = r.ids.length > 1;
-      const size = multi ? 26 : 12; const ring = act ? size + 22 : size + 8;
-      h += `<button class="pin ${r.side}${act ? ' act' : ''}" data-region="${ri}" style="left:${r.x * 100}%;top:${r.y * 100}%;opacity:${on ? 1 : 0.18};pointer-events:${on ? 'auto' : 'none'}" aria-label="${esc(multi ? r.ids.length + ' obras en ' + r.name : W[r.ids[0]].t + ', ' + W[r.ids[0]].place)}">
-        <span class="ring" style="width:${ring}px;height:${ring}px"></span><span class="core" style="width:${size}px;height:${size}px">${multi ? (on ? hits.length : r.ids.length) : ''}</span>
-        <span class="lbl">${esc(multi ? r.name : W[r.ids[0]].t)}</span></button>`;
+
+  /* ---------- mapa con zoom ---------- */
+  const E = D.extent;
+  const HOME = { cx: (E.lon0 + E.lon1) / 2, cy: (E.lat0 + E.lat1) / 2, z: 1 };
+  const mv = { ...HOME };
+  let geo = null, MW = 0, MH = 0, k0 = 1;
+  const cv = $('geo'), ctx = cv.getContext('2d');
+  const toX = (lon) => MW / 2 + (lon - mv.cx) * k0 * mv.z;
+  const toY = (lat) => MH / 2 - (lat - mv.cy) * k0 * mv.z;
+  const toLon = (x) => mv.cx + (x - MW / 2) / (k0 * mv.z);
+  const toLat = (y) => mv.cy - (y - MH / 2) / (k0 * mv.z);
+  const ZMAX = 90;
+  function sizeMap() {
+    const r = $('map').getBoundingClientRect(); MW = r.width; MH = r.height;
+    if (!MW || !MH) return false;
+    k0 = Math.min(MW / (E.lon1 - E.lon0), MH / (E.lat0 - E.lat1));
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    cv.width = Math.round(MW * dpr); cv.height = Math.round(MH * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return true;
+  }
+  function clampView(v) {
+    v.z = Math.max(1, Math.min(ZMAX, v.z));
+    const hw = MW / 2 / (k0 * v.z), hh = MH / 2 / (k0 * v.z);
+    v.cx = Math.max(E.lon0 + hw, Math.min(E.lon1 - hw, v.cx)) || v.cx;
+    v.cy = Math.max(E.lat1 + hh, Math.min(E.lat0 - hh, v.cy)) || v.cy;
+    if (E.lon1 - E.lon0 < 2 * hw) v.cx = HOME.cx;
+    if (E.lat0 - E.lat1 < 2 * hh) v.cy = HOME.cy;
+    return v;
+  }
+  function drawGeo() {
+    ctx.clearRect(0, 0, MW, MH);
+    if (geo) {
+      ctx.beginPath();
+      for (const c of geo) for (const r of c.r) { ctx.moveTo(toX(r[0]), toY(r[1])); for (let i = 2; i < r.length; i += 2) ctx.lineTo(toX(r[i]), toY(r[i + 1])); ctx.closePath(); }
+      ctx.fillStyle = '#e2dace'; ctx.fill();
+      ctx.lineWidth = 0.8; ctx.strokeStyle = '#cdc2b1'; ctx.stroke();
+    }
+    // graticule
+    const ppd = k0 * mv.z; const steps = [20, 10, 5, 2, 1, 0.5, 0.25, 0.1];
+    const st = steps.find((s) => s * ppd <= 240) || 0.1;
+    ctx.lineWidth = 1; ctx.font = '10px "Geist Mono", monospace'; ctx.fillStyle = '#9a9184';
+    const fmt = (v, pos, neg) => { const a = Math.abs(v); return (Number.isInteger(a) ? a : a.toFixed(st < 1 ? (st < 0.25 ? 1 : 2) : 0)) + '°' + (v === 0 ? '' : v > 0 ? pos : neg); };
+    for (let lon = Math.ceil(toLon(0) / st) * st; lon <= toLon(MW); lon += st) { const x = Math.round(toX(lon)) + 0.5; ctx.strokeStyle = 'rgba(160,148,130,.28)'; ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, MH); ctx.stroke(); if (x > 60 && x < MW - 40) ctx.fillText(fmt(+lon.toFixed(2), 'E', 'O'), x + 5, 16); }
+    for (let lat = Math.floor(toLat(0) / st) * st; lat >= toLat(MH); lat -= st) { const y = Math.round(toY(lat)) + 0.5; const eq = Math.abs(lat) < 1e-9; ctx.strokeStyle = eq ? 'rgba(150,130,105,.55)' : 'rgba(160,148,130,.28)'; ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(MW, y); ctx.stroke(); if (y > 30 && y < MH - 10) ctx.fillText(eq ? '0° · ECUADOR' : fmt(+lat.toFixed(2), 'N', 'S'), 8, y - 5); }
+    if (mv.z < 2.5) { ctx.font = 'italic 22px "Instrument Serif", Georgia, serif'; ctx.fillStyle = '#b1a898'; D.oceans.forEach((o) => { const x = toX(o.lon), y = toY(o.lat); if (x > 20 && x < MW - 160 && y > 20 && y < MH - 20) ctx.fillText(o.name, x, y); }); }
+  }
+  function clusters() {
+    // 1) agrupar por país; 2) si los lugares de un país se separan en pantalla, dividir por lugar
+    const pts = places.map((p) => ({ p, hits: p.ids.filter((i) => match(W[i])), x: toX(p.lon), y: toY(p.lat) })).filter((o) => o.hits.length);
+    const out = [];
+    for (const ctry of [...new Set(pts.map((o) => o.p.country))]) {
+      const cp = pts.filter((o) => o.p.country === ctry);
+      const spread = Math.max(0, ...cp.flatMap((a) => cp.map((b) => Math.hypot(a.x - b.x, a.y - b.y))));
+      if (spread < 90) { out.push({ items: cp }); continue; }
+      const loc = [];
+      for (const o of cp.sort((a, b) => b.hits.length - a.hits.length)) {
+        const c = loc.find((c) => c.items.some((t) => Math.hypot(t.x - o.x, t.y - o.y) < 52));
+        if (c) c.items.push(o); else loc.push({ items: [o] });
+      }
+      out.push(...loc);
+    }
+    const res = out.map((c) => {
+      const n = c.items.length; const x = c.items.reduce((a, t) => a + t.x, 0) / n, y = c.items.reduce((a, t) => a + t.y, 0) / n;
+      const ps = c.items.map((t) => t.p); const hits = c.items.flatMap((t) => t.hits);
+      const label = ps.length === 1 ? ps[0].short : ps[0].country;
+      const sub = ps.length === 1 ? ps[0].country : `${ps.length} lugares`;
+      return { x, y, ps, hits, label, sub };
     });
-    h += `<span class="scale">ESC. ILUSTRATIVA · AMÉRICA</span>`;
-    $('map').innerHTML = h;
+    // separar pines de distintos países que se pisan
+    for (let k = 0; k < 20; k++) for (const A of res) for (const B of res) {
+      if (A === B) continue; const dx = B.x - A.x, dy = B.y - A.y, d = Math.hypot(dx, dy) || 0.01;
+      if (d < 36) { const m = (36 - d) / 2; A.x -= dx / d * m; A.y -= dy / d * m; B.x += dx / d * m; B.y += dy / d * m; }
+    }
+    // lado de la etiqueta: a la izquierda si hay otro pin cerca a la derecha o si no entra
+    res.forEach((A) => { A.side = A.x > MW - 190 || res.some((B) => B !== A && B.x > A.x && B.x - A.x < 200 && Math.abs(B.y - A.y) < 34) ? 'l' : 'r'; });
+    return res;
   }
+  let lastClusters = [];
+  function renderPins() {
+    const sh = shownC();
+    lastClusters = clusters();
+    $('pins').innerHTML = lastClusters.map((c, k) => {
+      const act = c.hits.includes(sh); const n = c.hits.length; const size = n > 1 ? 26 : 12; const ring = act ? size + 22 : size + 8;
+      const side = c.side;
+      const sub = `<small>${esc(c.sub)}</small>`;
+      return `<button class="pin ${side}${act ? ' act' : ''}" data-cl="${k}" style="left:${c.x}px;top:${c.y}px" aria-label="${esc(n + (n > 1 ? ' obras en ' : ' obra en ') + c.label)}">
+        <span class="ring" style="width:${ring}px;height:${ring}px"></span><span class="core" style="width:${size}px;height:${size}px">${n > 1 ? n : ''}</span>
+        <span class="lbl">${esc(c.label)}${sub}</span></button>`;
+    }).join('');
+    $('zin').disabled = mv.z >= ZMAX - 0.01; $('zout').disabled = mv.z <= 1.001;
+  }
+  function renderMap() { if (!MW && !sizeMap()) return; drawGeo(); renderPins(); }
+  let anim = null;
+  function animateTo(t, ms = 480) {
+    cancelAnimationFrame(anim); t = clampView({ ...t });
+    const f = { ...mv }, t0 = performance.now();
+    const step = (now) => {
+      const k = Math.min(1, (now - t0) / ms), e = 1 - Math.pow(1 - k, 3);
+      mv.z = Math.exp(Math.log(f.z) + (Math.log(t.z) - Math.log(f.z)) * e);
+      mv.cx = f.cx + (t.cx - f.cx) * e; mv.cy = f.cy + (t.cy - f.cy) * e;
+      renderMap(); if (k < 1) anim = requestAnimationFrame(step);
+    };
+    anim = requestAnimationFrame(step);
+  }
+  function zoomAt(x, y, f, animate) {
+    const lon = toLon(x), lat = toLat(y); const z = Math.max(1, Math.min(ZMAX, mv.z * f));
+    const t = { z, cx: lon - (x - MW / 2) / (k0 * z), cy: lat + (y - MH / 2) / (k0 * z) };
+    if (animate) animateTo(t); else { Object.assign(mv, clampView(t)); renderMap(); }
+  }
+  function fitPlaces(ps) {
+    const lons = ps.map((p) => p.lon), lats = ps.map((p) => p.lat);
+    const w = Math.max(0.4, Math.max(...lons) - Math.min(...lons)), h = Math.max(0.4, Math.max(...lats) - Math.min(...lats));
+    const z = Math.min(ZMAX, Math.min((MW * 0.55) / (w * k0), (MH * 0.55) / (h * k0)));
+    animateTo({ z, cx: (Math.max(...lons) + Math.min(...lons)) / 2, cy: (Math.max(...lats) + Math.min(...lats)) / 2 });
+  }
+  const mapEl = $('map');
+  mapEl.addEventListener('wheel', (e) => { e.preventDefault(); const r = mapEl.getBoundingClientRect(); cancelAnimationFrame(anim); zoomAt(e.clientX - r.left, e.clientY - r.top, Math.exp(-e.deltaY * 0.0018)); }, { passive: false });
+  mapEl.addEventListener('dblclick', (e) => { if (e.target.closest('.pin,.zoomctl')) return; const r = mapEl.getBoundingClientRect(); zoomAt(e.clientX - r.left, e.clientY - r.top, 2.2, true); });
+  const ptrs = new Map(); let pinch = null, moved = 0;
+  mapEl.addEventListener('pointerdown', (e) => {
+    if (e.target.closest('.pin,.zoomctl')) return;
+    ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY }); mapEl.setPointerCapture(e.pointerId); cancelAnimationFrame(anim); moved = 0;
+    if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; pinch = { d: Math.hypot(a.x - b.x, a.y - b.y) }; }
+    mapEl.classList.add('drag');
+  });
+  mapEl.addEventListener('pointermove', (e) => {
+    if (!ptrs.has(e.pointerId)) return;
+    const prev = ptrs.get(e.pointerId); const cur = { x: e.clientX, y: e.clientY }; ptrs.set(e.pointerId, cur);
+    const r = mapEl.getBoundingClientRect();
+    if (ptrs.size === 2 && pinch) {
+      const [a, b] = [...ptrs.values()]; const d = Math.hypot(a.x - b.x, a.y - b.y);
+      zoomAt((a.x + b.x) / 2 - r.left, (a.y + b.y) / 2 - r.top, d / pinch.d); pinch.d = d; return;
+    }
+    const dx = cur.x - prev.x, dy = cur.y - prev.y; moved += Math.abs(dx) + Math.abs(dy);
+    mv.cx -= dx / (k0 * mv.z); mv.cy += dy / (k0 * mv.z); clampView(mv); renderMap();
+  });
+  const endPtr = (e) => { ptrs.delete(e.pointerId); if (ptrs.size < 2) pinch = null; if (!ptrs.size) mapEl.classList.remove('drag'); };
+  mapEl.addEventListener('pointerup', endPtr); mapEl.addEventListener('pointercancel', endPtr);
+  $('zin').onclick = () => zoomAt(MW / 2, MH / 2, 2, true);
+  $('zout').onclick = () => zoomAt(MW / 2, MH / 2, 0.5, true);
+  $('zhome').onclick = () => animateTo(HOME);
+  fetch('geo/americas.json').then((r) => r.json()).then((g) => { geo = g; renderMap(); }).catch(() => {});
+  new ResizeObserver(() => { if (cs.view === 'map' && sizeMap()) { clampView(mv); renderMap(); } }).observe(mapEl);
+
   function renderGrid() {
     const sh = shownC();
     const ids = W.map((w, i) => i).filter((i) => match(W[i])).sort((a, b) => W[b].lat - W[a].lat);
-    $('cards').innerHTML = ids.length ? ids.map((i) => { const w = W[i]; return `<button class="card${i === sh ? ' act' : ''}" data-work="${i}" aria-label="${esc(w.t + ', ' + w.place)}"><span class="cc">${esc(w.coords)}</span><span class="ph ld"><img src="${w.sm}" alt="" loading="lazy"></span><span class="ct">${esc(w.t)}</span><span class="cp">${esc(w.place.split(',')[0])}</span></button>`; }).join('') : '<p class="empty">Ninguna obra coincide con esos filtros.</p>';
+    $('cards').innerHTML = ids.length ? ids.map((i) => { const w = W[i]; return `<button class="card${i === sh ? ' act' : ''}" data-work="${i}" aria-label="${esc(w.t + ', ' + w.place)}"><span class="cc">${esc(w.coords)}</span><span class="ph ld"><img src="${w.sm}" alt="" loading="lazy"></span><span class="ct">${esc(w.t)}</span><span class="cp">${esc(w.short + ' · ' + w.country)}</span></button>`; }).join('') : '<p class="empty">Ninguna obra coincide con esos filtros.</p>';
   }
   function renderFicha() {
     const i = shownC(), w = W[i];
-    const reg = regions.find((r) => r.name === w.region);
+    const pl = placeOf(i);
     const story = w.story ? `<p class="story">${esc(w.story)}</p>` : '';
-    const group = reg.ids.length > 1 ? `<div style="display:flex;flex-direction:column;gap:8px"><span class="eyebrow mono">${reg.ids.length} obras en ${esc(reg.name)}</span><div class="group">${reg.ids.map((k) => `<button data-pick="${k}" aria-pressed="${k === i}" aria-label="Ver ${esc(W[k].t)}"><img src="${W[k].sm}" alt="" loading="lazy"></button>`).join('')}</div></div>` : '';
+    const group = pl.ids.length > 1 ? `<div style="display:flex;flex-direction:column;gap:8px"><span class="eyebrow mono">${pl.ids.length} obras en ${esc(pl.short)}</span><div class="group">${pl.ids.map((k) => `<button data-pick="${k}" aria-pressed="${k === i}" aria-label="Ver ${esc(W[k].t)}"><img src="${W[k].sm}" alt="" loading="lazy"></button>`).join('')}</div></div>` : '';
     $('ficha').innerHTML = `<div class="pic ld"><img src="${w.sm}" alt="${esc(w.t)}"></div>${group}
       <div style="display:flex;flex-direction:column;gap:8px"><span class="meta">N.º ${String(i + 1).padStart(2, '0')} · ${esc(w.coords)}</span><h2>${esc(w.t)}</h2><span class="place">${esc(w.place)}${w.year ? ' · ' + w.year : ''}${w.when ? ' · ' + esc(w.when) : ''}</span></div>
       ${w.text ? `<p class="phrase">“${esc(w.text)}”</p>` : ''}${story}
@@ -402,26 +528,33 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
   function renderC() { renderFilters(); if (cs.view === 'map') renderMap(); else renderGrid(); renderFicha(); }
   function setView(v) {
     cs.view = v; $('vMap').setAttribute('aria-pressed', v === 'map'); $('vGrid').setAttribute('aria-pressed', v === 'grid');
-    $('map').hidden = v !== 'map'; $('grid').hidden = v !== 'grid'; $('center').classList.toggle('is-map', v === 'map'); renderC();
+    $('map').hidden = v !== 'map'; $('grid').hidden = v !== 'grid'; $('center').classList.toggle('is-map', v === 'map');
+    if (v === 'map') requestAnimationFrame(() => { sizeMap(); clampView(mv); renderMap(); });
+    renderC();
   }
   $('vMap').onclick = () => setView('map');
   $('vGrid').onclick = () => setView('grid');
   $('q').addEventListener('input', (e) => { cs.q = e.target.value.trim().toLowerCase(); renderC(); });
   $('v-catalogo').addEventListener('click', (e) => {
-    const t = e.target.closest('[data-serie],[data-tone],[data-region],[data-work],[data-pick],[data-try]'); if (!t) return;
+    const t = e.target.closest('[data-serie],[data-tone],[data-cl],[data-work],[data-pick],[data-try]'); if (!t) return;
     if (t.dataset.serie) cs.serie = +t.dataset.serie;
     else if (t.dataset.tone) cs.tone = +t.dataset.tone;
-    else if (t.dataset.region) { const r = regions[+t.dataset.region]; const hits = r.ids.filter((i) => match(W[i])); cs.sel = hits[0] ?? r.ids[0]; cs.hover = null; if (mob()) setTimeout(() => $('ficha').scrollIntoView({ behavior: 'smooth' }), 30); }
+    else if (t.dataset.cl) {
+      const c = lastClusters[+t.dataset.cl]; if (!c) return;
+      cs.sel = c.hits.includes(cs.sel) && c.ps.length === 1 ? c.hits[(c.hits.indexOf(cs.sel) + 1) % c.hits.length] : c.hits[0]; cs.hover = null;
+      if (c.ps.length > 1) fitPlaces(c.ps);
+      else if (mob()) setTimeout(() => $('ficha').scrollIntoView({ behavior: 'smooth' }), 30);
+    }
     else if (t.dataset.work) { cs.sel = +t.dataset.work; cs.hover = null; if (mob()) setTimeout(() => $('ficha').scrollIntoView({ behavior: 'smooth' }), 30); }
     else if (t.dataset.pick) { cs.sel = +t.dataset.pick; cs.hover = null; }
     else if (t.dataset.try) { tryOn(+t.dataset.try); return; }
     renderC();
   });
   $('v-catalogo').addEventListener('mouseover', (e) => {
-    if (mob()) return;
-    const t = e.target.closest('[data-region],[data-work]'); if (!t) return;
-    const v = t.dataset.region ? (regions[+t.dataset.region].ids.find((i) => match(W[i])) ?? regions[+t.dataset.region].ids[0]) : +t.dataset.work;
-    if (cs.hover !== v) { cs.hover = v; renderFicha(); if (cs.view === 'map') renderMap(); else renderGrid(); }
+    if (mob() || ptrs.size) return;
+    const t = e.target.closest('[data-cl],[data-work]'); if (!t) return;
+    const v = t.dataset.cl ? (lastClusters[+t.dataset.cl] || { hits: [cs.sel] }).hits[0] : +t.dataset.work;
+    if (cs.hover !== v) { cs.hover = v; renderFicha(); if (cs.view === 'map') renderPins(); else renderGrid(); }
   });
   $('center').addEventListener('mouseleave', () => { if (cs.hover !== null) { cs.hover = null; renderC(); } });
 

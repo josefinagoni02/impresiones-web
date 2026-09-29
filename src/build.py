@@ -11,16 +11,18 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # lugar (texto que aparece en la ficha, en minúsculas) -> (lat, lon, región del mapa, nombre para mostrar)
 LUGARES = {
-    'rio de janeiro': (-22.91, -43.17, 'Río de Janeiro', 'Río de Janeiro, Brasil'),
-    'venao': (7.43, -80.19, 'Panamá', 'Playa Venao, Panamá'),
-    'san blas': (9.57, -78.83, 'Panamá', 'San Blas, Panamá'),
-    'santa teresa': (9.64, -85.17, 'Costa Rica', 'Santa Teresa, Costa Rica'),
-    'isla tortuga': (9.77, -84.89, 'Costa Rica', 'Isla Tortuga, Costa Rica'),
-    'puerto viejo': (9.66, -82.75, 'Costa Rica', 'Puerto Viejo, Costa Rica'),
-    'golden gate': (37.82, -122.48, 'California', 'Golden Gate, California'),
-    'san francisco': (37.77, -122.42, 'California', 'San Francisco, California'),
-    'tigre': (-34.43, -58.58, 'Tigre', 'Tigre, Buenos Aires'),
+    # clave: (lat, lon, lugar, país) — coordenadas del punto exacto
+    'rio de janeiro': (-22.9068, -43.1729, 'Río de Janeiro', 'Brasil'),
+    'venao': (7.4337, -80.1914, 'Playa Venao', 'Panamá'),
+    'san blas': (9.5594, -78.9481, 'San Blas', 'Panamá'),
+    'santa teresa': (9.6436, -85.1683, 'Santa Teresa', 'Costa Rica'),
+    'isla tortuga': (9.7736, -84.8895, 'Isla Tortuga', 'Costa Rica'),
+    'puerto viejo': (9.6563, -82.7539, 'Puerto Viejo', 'Costa Rica'),
+    'golden gate': (37.8199, -122.4783, 'Golden Gate', 'Estados Unidos'),
+    'san francisco': (37.7599, -122.5107, 'San Francisco', 'Estados Unidos'),
+    'tigre': (-34.4264, -58.5796, 'Tigre', 'Argentina'),
 }
+REGION_TXT = {'Estados Unidos': 'California, EE.UU.', 'Argentina': 'Buenos Aires, Argentina'}
 TONOS = [
     {'id': None, 'label': 'Todos los tonos', 'c': 'conic-gradient(#4f7f95,#c9ae83,#c9683f,#a8437a,#6f8a5a,#26303a,#d9dedb,#4f7f95)'},
     {'id': 'azul', 'label': 'Azul', 'c': '#4f7f95'},
@@ -69,7 +71,8 @@ def main():
         key = next((k for k in LUGARES if k in place.lower()), None)
         if not key:
             warn.append(f"lugar sin coordenadas: {d.get('title')} ({place})"); continue
-        lat, lon, region, pretty = LUGARES[key]
+        lat, lon, short, country = LUGARES[key]
+        pretty = f"{short}, {REGION_TXT.get(country, country)}"
         tones = [t for t in [d.get('tone')] if t]
         if 'magenta' in (d.get('notes') or '').lower() and 'magenta' not in tones:
             tones.append('magenta')
@@ -77,7 +80,7 @@ def main():
         works.append({
             'id': d['_id'], 't': (d.get('title') or 'Sin título').strip(), 'serie': (d.get('serie') or '').strip(),
             'year': d.get('year') or None, 'when': (d.get('when') or '').strip(),
-            'place': pretty, 'region': region, 'lat': lat, 'lon': lon, 'coords': f"{dms(lat, 'N', 'S')} {dms(lon, 'E', 'O')}",
+            'place': pretty, 'short': short, 'country': country, 'lat': lat, 'lon': lon, 'coords': f"{dms(lat, 'N', 'S')} {dms(lon, 'E', 'O')}",
             'fmt': 'h' if ar > 1.05 else 'v' if ar < 0.95 else 'q', 'ar': round(ar, 4),
             'img': f"img/{m['file']}.jpg", 'sm': f"img/{m['file']}-sm.jpg", 'edge': m['avg'], 'edgeD': darker(m['avg']),
             'tones': tones, 'moods': d.get('mood') or [], 'text': (d.get('phrase') or '').strip(), 'story': (d.get('story') or '').strip(),
