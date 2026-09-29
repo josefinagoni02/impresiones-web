@@ -109,7 +109,7 @@ nav.main a[aria-current="page"]{color:var(--ink);box-shadow:inset 0 -1.5px 0 var
 .card.act .cc{color:var(--ink)}
 .empty{padding:48px 8px;font-family:var(--display);font-style:italic;font-size:28px;color:var(--muted)}
 .ficha{border-left:1px solid var(--line);background:var(--card);padding:28px 32px;display:flex;flex-direction:column;gap:18px;overflow:auto}
-.ficha .pic{height:280px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#e6e0d5}
+.ficha .pic{width:100%;height:280px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#e6e0d5}
 .ficha .pic img{max-height:248px;max-width:88%;box-shadow:0 18px 30px -14px rgba(40,30,20,.5)}
 .ficha h2{margin:0;font-family:var(--display);font-weight:400;font-style:italic;font-size:54px;line-height:.95;letter-spacing:-.02em;text-wrap:balance}
 .ficha .meta{font-family:var(--mono);font-size:12px;letter-spacing:.05em;color:var(--muted)}
@@ -183,7 +183,7 @@ nav.main a[aria-current="page"]{color:var(--ink);box-shadow:inset 0 -1.5px 0 var
 .qty{display:flex;align-items:center;gap:2px;padding:5px;border-radius:99px}
 .qty button{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center}
 .qty button:disabled{opacity:.3;cursor:default}
-.qty .qn{min-width:34px;text-align:center;font-family:var(--display);font-size:28px;line-height:1;font-variant-numeric:tabular-nums}
+.qty .qn{min-width:28px;text-align:center;font-size:15px;font-weight:500;line-height:1;font-variant-numeric:tabular-nums}
 .tray{position:absolute;left:50%;bottom:112px;transform:translateX(-50%);padding:16px 18px;border-radius:18px;display:flex;flex-direction:column;gap:12px;z-index:5;max-width:calc(100% - 32px)}
 .tray .opts{display:flex;gap:6px;flex-wrap:wrap}
 .opt{width:72px;padding:4px 0;display:flex;flex-direction:column;align-items:center;gap:8px;font-size:12px;color:#4a443c;position:relative}
@@ -252,6 +252,25 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
 .ld img{position:relative;z-index:1;opacity:0;transition:opacity .5s ease}
 .ld.ok img{opacity:1}
 .piece .bx.ld img{position:absolute}
+.piece .bx.pan{cursor:move;touch-action:none}
+.piece .bx.pan.dragging img{transition:none}
+.pad{display:grid;grid-template-columns:repeat(3,36px);grid-template-rows:repeat(3,36px);gap:2px}
+.pad button{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid rgba(0,0,0,.12)}
+.pad button:disabled{opacity:.3;cursor:default}
+.pad .c{border-style:dashed;font-size:11px}
+#lb{position:fixed;inset:0;z-index:80;background:rgba(20,18,16,.94);display:flex;align-items:center;justify-content:center;padding:calc(56px + env(safe-area-inset-top,0px)) 72px calc(84px + env(safe-area-inset-bottom,0px));opacity:0;visibility:hidden;transition:opacity .35s,visibility .35s;color:#f4efe6}
+#lb.on{opacity:1;visibility:visible}
+#lb .ld{max-width:100%;max-height:100%;display:flex;align-items:center;justify-content:center;min-width:60px;min-height:60px}
+#lb img{max-width:100%;max-height:calc(100dvh - 160px);object-fit:contain;box-shadow:0 30px 80px -30px rgba(0,0,0,.8)}
+#lb .cap{position:absolute;left:0;right:0;bottom:calc(24px + env(safe-area-inset-bottom,0px));text-align:center;display:flex;flex-direction:column;gap:4px}
+#lb .cap b{font-family:var(--display);font-weight:400;font-style:italic;font-size:30px;line-height:1}
+#lb .cap small{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:#bdb4a6}
+#lb button{position:absolute;width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#f4efe6;background:rgba(255,255,255,.08)}
+#lb button:hover{background:rgba(255,255,255,.16)}
+#lb .x{top:calc(14px + env(safe-area-inset-top,0px));right:16px}
+#lb .pv{left:12px;top:50%;transform:translateY(-50%)}#lb .nx{right:12px;top:50%;transform:translateY(-50%)}
+.ficha .pic{cursor:zoom-in}
+@media (max-width:600px){#lb{padding-left:12px;padding-right:12px}#lb .pv,#lb .nx{top:auto;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -327,6 +346,13 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
 </section>
 <footer class="bottom"><span id="foot"></span><span>Impresiones fotográficas · marco o canvas</span></footer>
 
+<div id="lb" role="dialog" aria-modal="true" aria-label="Foto en grande" hidden>
+  <div class="ld" id="lbBox"><img id="lbImg" alt=""></div>
+  <div class="cap"><b id="lbT"></b><small id="lbP"></small></div>
+  <button class="x" id="lbX" aria-label="Cerrar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <button class="pv" id="lbPv" aria-label="Foto anterior"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>
+  <button class="nx" id="lbNx" aria-label="Foto siguiente"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+</div>
 <script id="data" type="application/json">__DATA__</script>
 <script>
 (() => {
@@ -353,8 +379,17 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
   const SERIES = ['Todas'].concat([...new Set(W.map((w) => w.serie).filter(Boolean))]);
   const cs = { view: 'map', sel: 0, hover: null, serie: 0, tone: 0, q: '' };
   const places = [];
-  W.forEach((w, i) => { let p = places.find((x) => x.short === w.short && x.country === w.country); if (!p) { p = { short: w.short, country: w.country, lat: w.lat, lon: w.lon, ids: [] }; places.push(p); } p.ids.push(i); });
+  W.forEach((w, i) => { let p = places.find((x) => x.short === w.short && x.country === w.country); if (!p) { p = { short: w.short, country: w.country, region: w.region || w.country, lat: w.lat, lon: w.lon, ids: [] }; places.push(p); } p.ids.push(i); });
   const countries = [...new Set(places.map((p) => p.country))];
+  countries.forEach((c) => {
+    const cp = places.filter((p) => p.country === c);
+    const clat = cp.reduce((a, p) => a + p.lat, 0) / cp.length, clon = cp.reduce((a, p) => a + p.lon, 0) / cp.length;
+    cp.forEach((p, i) => { p.dlat = clat + (p.lat - clat) * 4; p.dlon = clon + (p.lon - clon) * 4; if (p.dlat === clat && p.dlon === clon && cp.length > 1) p.dlon += (i - (cp.length - 1) / 2) * 0.5; });
+    for (let k = 0; k < 60; k++) for (const A of cp) for (const B of cp) {
+      if (A === B) continue; let dx = B.dlon - A.dlon, dy = B.dlat - A.dlat; let d = Math.hypot(dx, dy); if (d < 1e-6) { dx = 1; dy = 0; d = 1e-6; }
+      const MIN = 2.2; if (d < MIN) { const m = (MIN - d) / 2; A.dlon -= dx / d * m; A.dlat -= dy / d * m; B.dlon += dx / d * m; B.dlat += dy / d * m; }
+    }
+  });
   const match = (w) => (cs.serie === 0 || w.serie === SERIES[cs.serie]) && (cs.tone === 0 || w.tones.includes(TONES[cs.tone].id)) && (!cs.q || w.t.toLowerCase().includes(cs.q) || w.place.toLowerCase().includes(cs.q) || w.country.toLowerCase().includes(cs.q));
   const shownC = () => (cs.hover !== null ? cs.hover : cs.sel);
   const placeOf = (i) => places.find((p) => p.ids.includes(i));
@@ -376,7 +411,7 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
   const toY = (lat) => MH / 2 - (lat - mv.cy) * k0 * mv.z;
   const toLon = (x) => mv.cx + (x - MW / 2) / (k0 * mv.z);
   const toLat = (y) => mv.cy - (y - MH / 2) / (k0 * mv.z);
-  const ZMAX = 90;
+  const ZMAX = 8;
   function sizeMap() {
     const r = $('map').getBoundingClientRect(); MW = r.width; MH = r.height;
     if (!MW || !MH) return false;
@@ -413,7 +448,7 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
   }
   function clusters() {
     // 1) agrupar por país; 2) si los lugares de un país se separan en pantalla, dividir por lugar
-    const pts = places.map((p) => ({ p, hits: p.ids.filter((i) => match(W[i])), x: toX(p.lon), y: toY(p.lat) })).filter((o) => o.hits.length);
+    const pts = places.map((p) => ({ p, hits: p.ids.filter((i) => match(W[i])), x: toX(p.dlon), y: toY(p.dlat) })).filter((o) => o.hits.length);
     const out = [];
     for (const ctry of [...new Set(pts.map((o) => o.p.country))]) {
       const cp = pts.filter((o) => o.p.country === ctry);
@@ -429,9 +464,11 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
     const res = out.map((c) => {
       const n = c.items.length; const x = c.items.reduce((a, t) => a + t.x, 0) / n, y = c.items.reduce((a, t) => a + t.y, 0) / n;
       const ps = c.items.map((t) => t.p); const hits = c.items.flatMap((t) => t.hits);
-      const label = ps.length === 1 ? ps[0].short : ps[0].country;
-      const sub = ps.length === 1 ? ps[0].country : `${ps.length} lugares`;
-      return { x, y, ps, hits, label, sub };
+      const reg = ps.every((p) => p.region === ps[0].region) && ps[0].region !== ps[0].country && mv.z >= 1.9 ? ps[0].region : null;
+      const label = ps.length === 1 ? ps[0].short : reg || ps[0].country;
+      const sub = ps.length === 1 ? (ps[0].region !== ps[0].country ? `${ps[0].region} · ${ps[0].country}` : ps[0].country) : reg ? `${ps[0].country} · ${ps.length} lugares` : `${ps.length} lugares`;
+      const canRegion = !reg && ps.length > 1 && ps.every((p) => p.region === ps[0].region) && ps[0].region !== ps[0].country;
+      return { x, y, ps, hits, label, sub, canRegion };
     });
     // separar pines de distintos países que se pisan
     for (let k = 0; k < 20; k++) for (const A of res) for (const B of res) {
@@ -475,7 +512,7 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
     if (animate) animateTo(t); else { Object.assign(mv, clampView(t)); renderMap(); }
   }
   function fitPlaces(ps) {
-    const lons = ps.map((p) => p.lon), lats = ps.map((p) => p.lat);
+    const lons = ps.map((p) => p.dlon), lats = ps.map((p) => p.dlat);
     const w = Math.max(0.4, Math.max(...lons) - Math.min(...lons)), h = Math.max(0.4, Math.max(...lats) - Math.min(...lats));
     const z = Math.min(ZMAX, Math.min((MW * 0.55) / (w * k0), (MH * 0.55) / (h * k0)));
     animateTo({ z, cx: (Math.max(...lons) + Math.min(...lons)) / 2, cy: (Math.max(...lats) + Math.min(...lats)) / 2 });
@@ -506,7 +543,6 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
   $('zin').onclick = () => zoomAt(MW / 2, MH / 2, 2, true);
   $('zout').onclick = () => zoomAt(MW / 2, MH / 2, 0.5, true);
   $('zhome').onclick = () => animateTo(HOME);
-  fetch('geo/americas.json').then((r) => r.json()).then((g) => { geo = g; renderMap(); }).catch(() => {});
   new ResizeObserver(() => { if (cs.view === 'map' && sizeMap()) { clampView(mv); renderMap(); } }).observe(mapEl);
 
   function renderGrid() {
@@ -519,7 +555,7 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
     const pl = placeOf(i);
     const story = w.story ? `<p class="story">${esc(w.story)}</p>` : '';
     const group = pl.ids.length > 1 ? `<div style="display:flex;flex-direction:column;gap:8px"><span class="eyebrow mono">${pl.ids.length} obras en ${esc(pl.short)}</span><div class="group">${pl.ids.map((k) => `<button data-pick="${k}" aria-pressed="${k === i}" aria-label="Ver ${esc(W[k].t)}"><img src="${W[k].sm}" alt="" loading="lazy"></button>`).join('')}</div></div>` : '';
-    $('ficha').innerHTML = `<div class="pic ld"><img src="${w.sm}" alt="${esc(w.t)}"></div>${group}
+    $('ficha').innerHTML = `<button class="pic ld" data-zoom="${i}" aria-label="Ver ${esc(w.t)} en grande"><img src="${w.sm}" alt="${esc(w.t)}"></button>${group}
       <div style="display:flex;flex-direction:column;gap:8px"><span class="meta">N.º ${String(i + 1).padStart(2, '0')} · ${esc(w.coords)}</span><h2>${esc(w.t)}</h2><span class="place">${esc(w.place)}${w.year ? ' · ' + w.year : ''}${w.when ? ' · ' + esc(w.when) : ''}</span></div>
       ${w.text ? `<p class="phrase">“${esc(w.text)}”</p>` : ''}${story}
       <div class="tags"><span>Serie ${esc(w.serie || '—')}</span>${w.moods.map((m) => `<span>· ${esc(m)}</span>`).join('')}</div>
@@ -536,18 +572,20 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
   $('vGrid').onclick = () => setView('grid');
   $('q').addEventListener('input', (e) => { cs.q = e.target.value.trim().toLowerCase(); renderC(); });
   $('v-catalogo').addEventListener('click', (e) => {
-    const t = e.target.closest('[data-serie],[data-tone],[data-cl],[data-work],[data-pick],[data-try]'); if (!t) return;
+    const t = e.target.closest('[data-serie],[data-tone],[data-cl],[data-work],[data-pick],[data-try],[data-zoom]'); if (!t) return;
     if (t.dataset.serie) cs.serie = +t.dataset.serie;
     else if (t.dataset.tone) cs.tone = +t.dataset.tone;
     else if (t.dataset.cl) {
       const c = lastClusters[+t.dataset.cl]; if (!c) return;
       cs.sel = c.hits.includes(cs.sel) && c.ps.length === 1 ? c.hits[(c.hits.indexOf(cs.sel) + 1) % c.hits.length] : c.hits[0]; cs.hover = null;
-      if (c.ps.length > 1) fitPlaces(c.ps);
+      if (c.canRegion) animateTo({ z: Math.max(2.4, mv.z * 1.6), cx: toLon(c.x), cy: toLat(c.y) });
+      else if (c.ps.length > 1) fitPlaces(c.ps);
       else if (mob()) setTimeout(() => $('ficha').scrollIntoView({ behavior: 'smooth' }), 30);
     }
     else if (t.dataset.work) { cs.sel = +t.dataset.work; cs.hover = null; if (mob()) setTimeout(() => $('ficha').scrollIntoView({ behavior: 'smooth' }), 30); }
     else if (t.dataset.pick) { cs.sel = +t.dataset.pick; cs.hover = null; }
     else if (t.dataset.try) { tryOn(+t.dataset.try); return; }
+    else if (t.dataset.zoom) { openLb(+t.dataset.zoom); return; }
     renderC();
   });
   $('v-catalogo').addEventListener('mouseover', (e) => {
@@ -557,6 +595,25 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
     if (cs.hover !== v) { cs.hover = v; renderFicha(); if (cs.view === 'map') renderPins(); else renderGrid(); }
   });
   $('center').addEventListener('mouseleave', () => { if (cs.hover !== null) { cs.hover = null; renderC(); } });
+
+  /* ---------- foto en grande ---------- */
+  let lbI = null, lbList = [];
+  function showLb(i) {
+    lbI = i; const w = W[i];
+    $('lbBox').classList.remove('ok'); $('lbImg').src = w.img; $('lbImg').alt = w.t;
+    $('lbT').textContent = w.t; $('lbP').textContent = [w.place, w.year].filter(Boolean).join(' · ').toUpperCase();
+  }
+  function openLb(i) {
+    lbList = W.map((w, k) => k).filter((k) => match(W[k])); if (!lbList.includes(i)) lbList.unshift(i);
+    showLb(i); const lb = $('lb'); lb.hidden = false; requestAnimationFrame(() => lb.classList.add('on')); $('lbX').focus();
+  }
+  function closeLb() { const lb = $('lb'); lb.classList.remove('on'); setTimeout(() => { lb.hidden = true; }, 350); if (lbI !== null) { cs.sel = lbI; cs.hover = null; renderC(); } lbI = null; }
+  const stepLb = (d) => { const k = lbList.indexOf(lbI); showLb(lbList[(k + d + lbList.length) % lbList.length]); };
+  $('lbX').onclick = closeLb; $('lbPv').onclick = (e) => { e.stopPropagation(); stepLb(-1); }; $('lbNx').onclick = (e) => { e.stopPropagation(); stepLb(1); };
+  $('lb').addEventListener('click', (e) => { if (e.target === $('lb') || e.target.closest('.cap')) closeLb(); });
+  document.addEventListener('keydown', (e) => { if (lbI === null) return; if (e.key === 'Escape') closeLb(); else if (e.key === 'ArrowRight') stepLb(1); else if (e.key === 'ArrowLeft') stepLb(-1); });
+  let lbX0 = null; $('lb').addEventListener('touchstart', (e) => { lbX0 = e.touches[0].clientX; }, { passive: true });
+  $('lb').addEventListener('touchend', (e) => { if (lbX0 === null) return; const dx = e.changedTouches[0].clientX - lbX0; if (Math.abs(dx) > 50) stepLb(dx < 0 ? 1 : -1); lbX0 = null; });
 
   /* ================= PROBADOR ================= */
   const FRAMES = [
@@ -571,17 +628,25 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
   const SIZES = { v: [[30, 45], [50, 75], [70, 105]], h: [[45, 30], [75, 50], [105, 70]], q: [[30, 30], [50, 50], [70, 70]] };
   const NAMES = ['', 'Obra única', 'Díptico', 'Tríptico'];
   const first3 = W.map((w, i) => i).filter((i) => W[i].fmt === W[0].fmt).slice(0, 3);
-  const ps = { qty: 1, slots: [first3[0] ?? 0, first3[1] ?? 1, first3[2] ?? 2], rot: [0, 0, 0], fit: 'cover', active: 0, hover: null, orient: W[0].fmt, size: 1, finish: 'marco', frame: 'negro', custom: '#7a5c8e', mat: 'blanco', edge: 'wrap', open: null, tab: 'obras', set: null };
+  const ps = { qty: 1, slots: [first3[0] ?? 0, first3[1] ?? 1, first3[2] ?? 2], rot: [0, 0, 0], off: [[0, 0], [0, 0], [0, 0]], fit: 'cover', active: 0, hover: null, orient: W[0].fmt, size: 1, finish: 'marco', frame: 'negro', custom: '#7a5c8e', mat: 'blanco', edge: 'wrap', open: null, tab: 'obras', set: null };
   const up = (patch) => { Object.assign(ps, { set: null }, patch); renderP(); };
   const frameOf = () => (ps.frame === 'custom' ? { id: 'custom', label: 'A medida', bg: ps.custom } : FRAMES.find((f) => f.id === ps.frame));
   const shownP = (i) => (i === ps.active && ps.hover !== null ? ps.hover : ps.slots[i]);
   const chev = '<svg class="ch" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>';
 
   function tryOn(i) {
-    ps.slots[ps.active] = i; ps.rot[ps.active] = 0; ps.orient = W[i].fmt; ps.hover = null; ps.set = null;
+    ps.slots[ps.active] = i; ps.rot[ps.active] = 0; ps.off[ps.active] = [0, 0]; ps.orient = W[i].fmt; ps.hover = null; ps.set = null;
     location.hash = '#probador';
   }
 
+  let geom = [];
+  const clamp1 = (v) => Math.max(-1, Math.min(1, v));
+  const imgTf = (i, ox, oy, r) => `translate(-50%,-50%) translate(${ps.off[i][0] * ox}px,${ps.off[i][1] * oy}px) rotate(${r}deg)`;
+  function nudge(dx, dy) {
+    const k = ps.qty > 1 ? ps.active : 0; const g = geom[k]; if (!g) return;
+    ps.off[k] = [g.ox > 1 ? clamp1(ps.off[k][0] + dx) : 0, g.oy > 1 ? clamp1(ps.off[k][1] + dy) : 0]; ps.set = null;
+    renderPieces(); renderTray();
+  }
   function renderPieces() {
     const isM = ps.finish === 'marco';
     const d = SIZES[ps.orient][ps.size];
@@ -592,17 +657,20 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
     const wa = $('wallarea'); const aw = wa.clientWidth - (mob() ? 48 : 120); const ah = wa.clientHeight - (mob() ? 70 : 60);
     const sc = Math.max(0.5, Math.min(4.2, aw / tot, ah / ph));
     const BW = d[0] * sc, BH = d[1] * sc, multi = ps.qty > 1;
-    let h = '';
+    let h = ''; geom = [];
     for (let i = 0; i < ps.qty; i++) {
       const w = W[shownP(i)], r = ps.rot[i], turned = r % 180 !== 0;
       const a = turned ? 1 / w.ar : w.ar, boxA = BW / BH, cover = ps.fit === 'cover';
       let dw, dh; if ((a > boxA) === cover) { dh = BH; dw = BH * a; } else { dw = BW; dh = BW / a; }
       const ew = turned ? dh : dw, eh = turned ? dw : dh;
+      const ox = Math.max(0, (dw - BW) / 2), oy = Math.max(0, (dh - BH) / 2);
+      geom[i] = { ox, oy, r };
+      const pan = ox > 1 || oy > 1;
       const eC = ps.edge === 'wrap' ? w.edge : ed.c, eD = ps.edge === 'wrap' ? w.edgeD : ed.cd;
       const frSt = isM ? `padding:${fcm * sc}px;background:${fr.bg};box-shadow:0 2px 3px rgba(0,0,0,.18),0 26px 44px -16px rgba(50,38,26,.45)` : `padding:0;border-right:${2.2 * sc}px solid ${eC};border-bottom:${2.2 * sc}px solid ${eD};box-shadow:0 26px 44px -16px rgba(50,38,26,.5)`;
       h += `<button class="piece${multi && i === ps.active ? ' act' : ''}" data-slot="${i}" aria-label="Lugar ${i + 1}: ${esc(w.t)}">
         <div class="ring"><div class="fr" style="${frSt}"><div class="mt" style="padding:${mcm * sc}px;background:${isM && mt.c ? mt.c : 'transparent'}">
-        <div class="bx ld" style="width:${BW}px;height:${BH}px"><img src="${w.img}" alt="" style="width:${ew}px;height:${eh}px;transform:translate(-50%,-50%) rotate(${r}deg)"></div></div></div></div>
+        <div class="bx ld${pan ? ' pan' : ''}" data-bx="${i}" style="width:${BW}px;height:${BH}px"><img src="${w.img}" alt="" draggable="false" style="width:${ew}px;height:${eh}px;transform:${imgTf(i, ox, oy, r)}"></div></div></div></div>
         ${multi ? `<span class="pl">${i + 1} · ${esc(w.t)}</span>` : ''}</button>`;
     }
     $('comp').innerHTML = h;
@@ -653,10 +721,20 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
       h = `<span class="hint">Forma del cuadro</span><div class="opts">${ORIENTS.map((o) => `<button class="chip" data-a="orient" data-v="${o.id}" aria-pressed="${o.id === ps.orient}"><span style="width:${o.icon[0]}px;height:${o.icon[1]}px;border:1.5px solid currentColor;border-radius:2px"></span>${o.label}</button>`).join('')}</div>
         <div class="opts">${SIZES[ps.orient].map((d, i) => `<button class="chip" data-a="size" data-v="${i}" aria-pressed="${i === ps.size}">${d[0]} × ${d[1]} cm</button>`).join('')}</div>`;
     } else if (ps.open === 'img') {
-      const multi = ps.qty > 1, cr = ps.rot[multi ? ps.active : 0];
-      h = `<span class="hint">${multi ? `Girá y encuadrá la foto del lugar ${ps.active + 1} (${esc(W[ps.slots[ps.active]].t)}) sin cambiar el cuadro.` : 'Girá o encuadrá la foto dentro del cuadro, sin cambiar su forma.'}</span>
-        <div class="opts" style="align-items:center;gap:14px"><div class="rot"><button class="round" data-a="rot" data-v="-90" aria-label="Rotar a la izquierda"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 3v6h6"/></svg></button><span style="width:46px;text-align:center;font-weight:500">${cr}°</span><button class="round" data-a="rot" data-v="90" aria-label="Rotar a la derecha"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg></button></div>
-        <button class="chip" data-a="fit" data-v="cover" aria-pressed="${ps.fit === 'cover'}">Llenar el cuadro</button><button class="chip" data-a="fit" data-v="contain" aria-pressed="${ps.fit === 'contain'}">Imagen completa</button></div>`;
+      const multi = ps.qty > 1, k = multi ? ps.active : 0, cr = ps.rot[k], g = geom[k] || { ox: 0, oy: 0 };
+      const cx = g.ox > 1, cy = g.oy > 1, o = ps.off[k];
+      const arr = (d) => `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform:rotate(${d}deg)"><path d="M12 19V5M5 12l7-7 7 7"/></svg>`;
+      const hint = cx || cy ? 'Arrastrá la foto dentro del cuadro o usá las flechas para reencuadrarla.' : (ps.fit === 'cover' ? 'La foto entra justa en el cuadro: no hay margen para moverla.' : 'Con "Imagen completa" la foto se ve entera. Elegí "Llenar el cuadro" para reencuadrarla.');
+      h = `<span class="hint">${multi ? `Foto del lugar ${ps.active + 1} (${esc(W[ps.slots[ps.active]].t)}). ` : ''}${hint}</span>
+        <div class="opts" style="align-items:center;gap:16px">
+          <div class="rot"><button class="round" data-a="rot" data-v="-90" aria-label="Rotar a la izquierda"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 3v6h6"/></svg></button><span style="width:40px;text-align:center;font-weight:500">${cr}°</span><button class="round" data-a="rot" data-v="90" aria-label="Rotar a la derecha"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg></button></div>
+          <div class="pad" role="group" aria-label="Mover la foto">
+            <span></span><button data-a="nudge" data-v="0,-1" aria-label="Mover la foto hacia arriba" ${cy && o[1] > -1 ? '' : 'disabled'}>${arr(0)}</button><span></span>
+            <button data-a="nudge" data-v="-1,0" aria-label="Mover la foto hacia la izquierda" ${cx && o[0] > -1 ? '' : 'disabled'}>${arr(-90)}</button><button class="c" data-a="center" aria-label="Centrar la foto" ${o[0] || o[1] ? '' : 'disabled'}>●</button><button data-a="nudge" data-v="1,0" aria-label="Mover la foto hacia la derecha" ${cx && o[0] < 1 ? '' : 'disabled'}>${arr(90)}</button>
+            <span></span><button data-a="nudge" data-v="0,1" aria-label="Mover la foto hacia abajo" ${cy && o[1] < 1 ? '' : 'disabled'}>${arr(180)}</button><span></span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px"><button class="chip" data-a="fit" data-v="cover" aria-pressed="${ps.fit === 'cover'}">Llenar el cuadro</button><button class="chip" data-a="fit" data-v="contain" aria-pressed="${ps.fit === 'contain'}">Imagen completa</button></div>
+        </div>`;
     }
     t.innerHTML = h;
     const cc = $('customColor'); if (cc) cc.addEventListener('input', (e) => { ps.custom = e.target.value; ps.frame = 'custom'; ps.set = null; renderPieces(); renderDock(); });
@@ -689,7 +767,9 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
 
   $('dock').addEventListener('click', (e) => { e.stopPropagation(); act(e); });
   $('tray').addEventListener('click', (e) => { e.stopPropagation(); act(e); });
+  let justPanned = false;
   $('stage').addEventListener('click', (e) => {
+    if (justPanned) { justPanned = false; return; }
     const p = e.target.closest('[data-slot]');
     if (p) { ps.active = +p.dataset.slot; }
     if (ps.open) ps.open = null;
@@ -707,14 +787,33 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
     else if (a === 'orient') up({ orient: v });
     else if (a === 'size') up({ size: +v });
     else if (a === 'fit') up({ fit: v });
-    else if (a === 'rot') { const k = ps.qty > 1 ? ps.active : 0; ps.rot[k] = (ps.rot[k] + +v + 360) % 360; up({}); }
+    else if (a === 'rot') { const k = ps.qty > 1 ? ps.active : 0; ps.rot[k] = (ps.rot[k] + +v + 360) % 360; ps.off[k] = [0, 0]; up({}); }
+    else if (a === 'nudge') { const [x, y] = v.split(',').map(Number); nudge(x * 0.25, y * 0.25); }
+    else if (a === 'center') { const k = ps.qty > 1 ? ps.active : 0; ps.off[k] = [0, 0]; up({}); }
   }
+  let drag = null;
+  $('comp').addEventListener('pointerdown', (e) => {
+    const bx = e.target.closest('.bx.pan'); if (!bx) return;
+    const i = +bx.dataset.bx; if (!geom[i]) return;
+    e.preventDefault(); bx.setPointerCapture(e.pointerId); bx.classList.add('dragging');
+    drag = { i, bx, x: e.clientX, y: e.clientY, o: ps.off[i].slice(), moved: 0 };
+  });
+  $('comp').addEventListener('pointermove', (e) => {
+    if (!drag) return; const g = geom[drag.i]; const dx = e.clientX - drag.x, dy = e.clientY - drag.y; drag.moved = Math.abs(dx) + Math.abs(dy);
+    ps.off[drag.i] = [g.ox > 1 ? clamp1(drag.o[0] + dx / g.ox) : 0, g.oy > 1 ? clamp1(drag.o[1] + dy / g.oy) : 0];
+    drag.bx.querySelector('img').style.transform = imgTf(drag.i, g.ox, g.oy, g.r);
+  });
+  const endDrag = () => {
+    if (!drag) return; const d = drag; drag = null; d.bx.classList.remove('dragging');
+    if (d.moved > 4) { justPanned = true; ps.set = null; if (ps.qty > 1) ps.active = d.i; renderPieces(); renderTray(); setTimeout(() => { justPanned = false; }, 0); }
+  };
+  $('comp').addEventListener('pointerup', endDrag); $('comp').addEventListener('pointercancel', endDrag);
   $('tObras').onclick = () => { ps.tab = 'obras'; renderList(); };
   $('tSets').onclick = () => { ps.tab = 'sets'; renderList(); };
   $('plist').addEventListener('click', (e) => {
     const r = e.target.closest('[data-w]'), s = e.target.closest('[data-set]');
-    if (r) { const i = +r.dataset.w; ps.slots[ps.active] = i; ps.rot[ps.active] = 0; ps.hover = null; ps.set = null; if (ps.qty > 1) ps.active = (ps.active + 1) % ps.qty; renderP(); if (mob()) $('stage').scrollIntoView({ behavior: 'smooth' }); }
-    if (s) { const k = +s.dataset.set, st = D.sets[k]; Object.assign(ps, { qty: st.works.length, slots: st.works.concat(ps.slots).slice(0, 3), rot: [0, 0, 0], orient: st.orient, size: 1, finish: 'marco', frame: st.frame, mat: st.mat, fit: 'cover', active: 0, hover: null, open: null, set: k }); renderP(); }
+    if (r) { const i = +r.dataset.w; ps.slots[ps.active] = i; ps.rot[ps.active] = 0; ps.off[ps.active] = [0, 0]; ps.hover = null; ps.set = null; if (ps.qty > 1) ps.active = (ps.active + 1) % ps.qty; renderP(); if (mob()) $('stage').scrollIntoView({ behavior: 'smooth' }); }
+    if (s) { const k = +s.dataset.set, st = D.sets[k]; Object.assign(ps, { qty: st.works.length, slots: st.works.concat(ps.slots).slice(0, 3), rot: [0, 0, 0], off: [[0, 0], [0, 0], [0, 0]], orient: st.orient, size: 1, finish: 'marco', frame: st.frame, mat: st.mat, fit: 'cover', active: 0, hover: null, open: null, set: k }); renderP(); }
   });
   $('plist').addEventListener('mouseover', (e) => { if (mob() || ps.tab !== 'obras') return; const r = e.target.closest('[data-w]'); if (r && ps.hover !== +r.dataset.w) { ps.hover = +r.dataset.w; renderPieces(); } });
   $('plist').addEventListener('mouseleave', () => { if (ps.hover !== null) { ps.hover = null; renderPieces(); } });
