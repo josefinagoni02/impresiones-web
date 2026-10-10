@@ -544,6 +544,7 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
   $('zin').onclick = () => zoomAt(MW / 2, MH / 2, 2, true);
   $('zout').onclick = () => zoomAt(MW / 2, MH / 2, 0.5, true);
   $('zhome').onclick = () => animateTo(HOME);
+  fetch('geo/americas.json').then((r) => r.json()).then((g) => { geo = g; if (cs.view === 'map') renderMap(); }).catch(() => {});
   new ResizeObserver(() => { if (cs.view === 'map' && sizeMap()) { clampView(mv); renderMap(); } }).observe(mapEl);
 
   function renderGrid() {
