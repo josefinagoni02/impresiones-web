@@ -21,11 +21,14 @@ LUGARES = {
     'golden gate': (37.8199, -122.4783, 'Golden Gate', 'Estados Unidos'),
     'san francisco': (37.7599, -122.5107, 'San Francisco', 'Estados Unidos'),
     'tigre': (-34.4264, -58.5796, 'Tigre', 'Argentina'),
+    'obelisco': (-34.6037, -58.3816, 'Obelisco', 'Argentina'),
+    'capital federal': (-34.6037, -58.3816, 'Obelisco', 'Argentina'),
+    'caba': (-34.6037, -58.3816, 'Obelisco', 'Argentina'),
     'tafí': (-26.8527, -65.7098, 'Tafí del Valle', 'Argentina'),
     'tafi': (-26.8527, -65.7098, 'Tafí del Valle', 'Argentina'),
 }
 REGION_TXT = {'Estados Unidos': 'California, EE.UU.', 'Argentina': 'Buenos Aires, Argentina'}
-REGION = {'golden gate': 'California', 'san francisco': 'California', 'tigre': 'Buenos Aires', 'tafí': 'Tucumán', 'tafi': 'Tucumán'}
+REGION = {'obelisco': 'Buenos Aires', 'capital federal': 'Buenos Aires', 'caba': 'Buenos Aires', 'golden gate': 'California', 'san francisco': 'California', 'tigre': 'Buenos Aires', 'tafí': 'Tucumán', 'tafi': 'Tucumán'}
 TONOS = [
     {'id': None, 'label': 'Todos los tonos', 'c': 'conic-gradient(#4f7f95,#c9ae83,#c9683f,#a8437a,#6f8a5a,#26303a,#d9dedb,#4f7f95)'},
     {'id': 'azul', 'label': 'Azul', 'c': '#4f7f95'},
