@@ -29,6 +29,14 @@ LUGARES = {
 }
 REGION_TXT = {'Estados Unidos': 'California, EE.UU.', 'Argentina': 'Buenos Aires, Argentina'}
 REGION = {'obelisco': 'Buenos Aires', 'capital federal': 'Buenos Aires', 'caba': 'Buenos Aires', 'golden gate': 'California', 'san francisco': 'California', 'tigre': 'Buenos Aires', 'tafí': 'Tucumán', 'tafi': 'Tucumán'}
+# Precios de venta (opción B: 30% de margen sobre el precio, redondeado a $500). Medidas en vertical.
+PRECIOS = {
+    'print': [dict(w=20, h=30, pw=20, ph=30, p=15500), dict(w=30, h=40, pw=30, ph=40, p=31000), dict(w=40, h=60, pw=40, ph=60, p=62000)],
+    'marco': [dict(w=30, h=40, pw=30, ph=40, p=50000), dict(w=40, h=60, pw=40, ph=60, p=100500)],
+    'marco_mat': [dict(w=30, h=40, pw=20, ph=30, mat=5, p=34500), dict(w=40, h=50, pw=30, ph=40, mat=5, p=65500), dict(w=60, h=80, pw=40, ph=60, mat=10, p=134000)],
+    'canvas': [dict(w=20, h=30, pw=20, ph=30, p=35500), dict(w=30, h=45, pw=30, ph=45, p=39500), dict(w=40, h=60, pw=40, ph=60, p=49500), dict(w=50, h=75, pw=50, ph=75, p=65000)],
+    'square': [30, 50, 70],
+}
 TONOS = [
     {'id': None, 'label': 'Todos los tonos', 'c': 'conic-gradient(#4f7f95,#c9ae83,#c9683f,#a8437a,#6f8a5a,#26303a,#d9dedb,#4f7f95)'},
     {'id': 'azul', 'label': 'Azul', 'c': '#4f7f95'},
@@ -106,8 +114,8 @@ def main():
             a, b = works[pair[0]], works[pair[1]]
             serie = a['serie'] or b['serie']
             orient = a['fmt']
-            sets.append({'name': f"Díptico {serie}".strip(), 'desc': f"{a['t']} + {b['t']} · {'horizontal 75×50' if orient == 'h' else 'vertical 50×75'}",
-                         'works': list(pair), 'orient': orient, 'frame': 'negro' if orient == 'h' else 'roble', 'mat': 'sin' if orient == 'h' else 'blanco'})
+            sets.append({'name': f"Díptico {serie}".strip(), 'desc': f"{a['t']} + {b['t']} · {'horizontal, marco negro' if orient == 'h' else 'vertical, marco madera con paspartú'}",
+                         'works': list(pair), 'orient': orient, 'frame': 'negro' if orient == 'h' else 'madera', 'mat': 'sin' if orient == 'h' else 'blanco'})
     for w in works: w.pop('notes')
     # extensión del mapa: América por defecto, se agranda si hace falta
     lat0, lat1, lon0, lon1 = 46, -44, -128, -34
@@ -118,7 +126,7 @@ def main():
         'name': cfg.get('name') or 'Impresiones', 'bio': cfg.get('bio') or '', 'whatsapp': cfg.get('whatsapp') or '',
         'instagram': cfg.get('instagram') or '', 'email': cfg.get('email') or '', 'tagline': cfg.get('tagline') or '',
     }
-    data = {'works': works, 'config': config, 'sets': sets, 'tones': [t for t in TONOS if t['id'] is None or any(t['id'] in w['tones'] for w in works)],
+    data = {'pricing': PRECIOS, 'works': works, 'config': config, 'sets': sets, 'tones': [t for t in TONOS if t['id'] is None or any(t['id'] in w['tones'] for w in works)],
             'extent': {'lat0': lat0, 'lat1': lat1, 'lon0': lon0, 'lon1': lon1},
             'oceans': [{'name': 'Océano Pacífico', 'lat': -8, 'lon': -112}, {'name': 'Océano Atlántico', 'lat': 24, 'lon': -68}]}
     tpl = open(os.path.join(ROOT, 'src', 'template.html')).read()

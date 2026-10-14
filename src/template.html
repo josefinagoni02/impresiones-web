@@ -271,6 +271,43 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
 #lb .pv{left:12px;top:50%;transform:translateY(-50%)}#lb .nx{right:12px;top:50%;transform:translateY(-50%)}
 .ficha .pic{cursor:zoom-in}
 @media (max-width:600px){#lb{padding-left:12px;padding-right:12px}#lb .pv,#lb .nx{top:auto;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:none}}
+/* tarjeta Tu cuadro */
+.quote{display:flex;gap:16px;align-items:center}
+.quote .qd{width:84px;height:84px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:var(--soft);border-radius:8px}
+.quote .qd svg{filter:drop-shadow(0 4px 6px rgba(40,30,20,.25))}
+.quote .qt{min-width:0;display:flex;flex-direction:column;gap:6px}
+.quote dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:1px 10px;font-size:12px}
+.quote dt{color:var(--muted)}.quote dd{margin:0}
+.quote .qp{font-family:var(--display);font-weight:400;font-size:30px;line-height:1}
+.quote .qp.qask{font-size:24px;font-style:italic}
+.quote .qprice small{font-size:12px;color:var(--muted)}
+.quote .qnote{font-size:11px;line-height:1.4;color:var(--muted)}
+.quote .qnote a{color:var(--muted)}
+.szchip{min-width:96px;padding:8px 14px;border-radius:12px;border:1px solid var(--line);display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;transition:background .2s,color .2s}
+.szchip b{font-weight:500;font-size:14px}.szchip small{font-size:11px;opacity:.75}
+.szchip[aria-pressed="true"]{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
+.opt .ask{font-size:10px;color:var(--muted);margin-top:-6px}
+.printline{font-size:12px;color:var(--muted);text-underline-offset:3px}
+.pill .seg2{padding:0 13px}
+/* impresión y precios */
+.info{padding:clamp(56px,8vw,112px) clamp(16px,3vw,48px);border-top:1px solid var(--line);display:flex;flex-direction:column;gap:40px;background:var(--card)}
+.info h2{margin:8px 0 0;font-family:var(--display);font-weight:400;font-size:clamp(40px,5.5vw,72px);line-height:.95;letter-spacing:-.02em;text-wrap:balance}
+.info h3{margin:0 0 10px;font-family:var(--display);font-weight:400;font-size:28px}
+.icols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:40px}
+.icols p{margin:0;font-size:15px;line-height:1.65;color:#3f3a33;max-width:46ch}
+.prices{display:flex;flex-direction:column;gap:18px;padding-top:28px;border-top:1px solid var(--line)}
+.phd{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 24px}
+.phd h3{margin:0}
+#priceRange{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.ptable{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:28px}
+.pcol h4{margin:0;font-size:14px;font-weight:600}
+.pcol>small{display:block;font-size:12px;color:var(--muted);margin:2px 0 10px}
+.pcol ul{list-style:none;margin:0;padding:0}
+.pcol li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px;font-variant-numeric:tabular-nums}
+.pcol li small{color:var(--muted);font-size:11px}
+.pnote{margin:0;font-size:13px;color:var(--muted);max-width:80ch}
+@media (max-width:1000px){.ptable{grid-template-columns:repeat(2,minmax(0,1fr))}.icols{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:520px){.ptable{grid-template-columns:minmax(0,1fr)}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -281,6 +318,7 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
   <nav class="main">
     <a href="#catalogo" data-route="catalogo">Catálogo</a>
     <a href="#probador" data-route="probador">Probador</a>
+    <a href="#impresion" class="hide-s">Impresión</a>
     <a href="#sobre" class="hide-s">Sobre mí</a>
     <a href="#contacto">Contacto</a>
   </nav>
@@ -320,7 +358,7 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
     <div class="tray glass" id="tray" hidden></div>
     <div class="dock" id="dock">
       <div class="dgroup"><span class="eyebrow">Terminación</span>
-        <div class="pill glass"><button class="seg2" data-a="finish" data-v="marco">Marco</button><button class="seg2" data-a="finish" data-v="canvas">Canvas</button></div>
+        <div class="pill glass"><button class="seg2" data-a="finish" data-v="print">Sin montaje</button><button class="seg2" data-a="finish" data-v="marco">Marco</button><button class="seg2" data-a="finish" data-v="canvas">Canvas</button></div>
       </div>
       <div class="bar glass" id="bar"></div>
       <div class="dgroup right"><span class="eyebrow">Cuadros</span>
@@ -336,10 +374,23 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
     <div class="tabs" role="tablist"><button role="tab" id="tObras" aria-selected="true">Obras</button><button role="tab" id="tSets" aria-selected="false">Sets armados</button></div>
     <p class="phelp" id="phelp"></p>
     <div class="plist" id="plist"></div>
-    <div class="pfoot"><span class="sum" id="sum"></span><a class="btn" id="consult" href="#contacto" target="_blank" rel="noopener">Consultar por esta composición <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+    <div class="pfoot"><div class="quote" id="quote"></div><a class="btn" id="consult" href="#contacto" target="_blank" rel="noopener">Consultar por esta composición <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
   </aside>
 </main>
 
+<section class="info" id="impresion">
+  <div class="ihead"><span class="eyebrow">Impresión y materiales</span><h2>Cada obra se imprime a pedido</h2></div>
+  <div class="icols">
+    <div><h3>Papel</h3><p>Cada obra se imprime a pedido en Hahnemühle Photo Rag Baryta, un papel de 100% algodón de la fábrica alemana Hahnemühle. Tiene un acabado satinado, casi liso, y negros profundos, con el aspecto de una copia de laboratorio clásica. Es un papel de archivo, libre de ácido: lejos del sol directo y la humedad, conserva el color durante décadas.</p></div>
+    <div><h3>Canvas</h3><p>Lienzo de poliéster de 260 g, impreso con tecnología Fine Art de 11 colores y montado sobre bastidor de pintor de 2 × 2 cm. Se entrega embalado para su traslado.</p></div>
+    <div><h3>Marcos y paspartú</h3><p>Marcos en negro, blanco o madera; otros colores, a consultar. La medida indicada es la del marco completo. El paspartú es blanco, con un borde de 5 o 10 cm según la medida.</p></div>
+  </div>
+  <div class="prices">
+    <div class="phd"><h3>Precios estimados</h3><span id="priceRange"></span></div>
+    <div class="ptable" id="priceTable"></div>
+    <p class="pnote">Precios estimados por obra, sujetos a confirmación. <b>El envío no está incluido</b> y se coordina aparte según el destino. Medidas cuadradas u otras medidas, paspartú negro y colores de marco especiales: consultá disponibilidad.</p>
+  </div>
+</section>
 <section class="about" id="sobre">
   <div><h2>Sobre mí</h2><p id="bio"></p></div>
   <div class="contact" id="contacto"></div>
@@ -364,7 +415,7 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
 
   /* ---------- routing ---------- */
   function route() {
-    const r = location.hash === '#probador' ? 'probador' : location.hash === '#sobre' || location.hash === '#contacto' ? null : 'catalogo';
+    const r = location.hash === '#probador' ? 'probador' : ['#sobre', '#contacto', '#impresion'].includes(location.hash) ? null : 'catalogo';
     if (!r) return;
     $('v-catalogo').hidden = r !== 'catalogo';
     $('v-probador').hidden = r !== 'probador';
@@ -561,8 +612,10 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
       <div style="display:flex;flex-direction:column;gap:8px"><span class="meta">N.º ${String(i + 1).padStart(2, '0')} · ${esc(w.coords)}</span><h2>${esc(w.t)}</h2><span class="place">${esc(w.place)}${w.year ? ' · ' + w.year : ''}${w.when ? ' · ' + esc(w.when) : ''}</span></div>
       ${w.text ? `<p class="phrase">“${esc(w.text)}”</p>` : ''}${story}
       <div class="tags"><span>Serie ${esc(w.serie || '—')}</span>${w.moods.map((m) => `<span>· ${esc(m)}</span>`).join('')}</div>
+      <a class="printline" href="#impresion">Impresión de archivo a pedido · ${priceFrom()}</a>
       <div class="acts"><a class="btn solid" href="#probador" data-try="${i}">Probar en mi pared →</a><a class="btn" href="${esc(consultLink(w.t))}" target="_blank" rel="noopener">Consultar</a></div>`;
   }
+  const priceFrom = () => { const all = ['print', 'marco', 'marco_mat', 'canvas'].flatMap((k) => D.pricing[k].map((o) => o.p)); return `desde $${Math.min(...all).toLocaleString('es-AR')}`; };
   function renderC() { renderFilters(); if (cs.view === 'map') renderMap(); else renderGrid(); renderFicha(); }
   function setView(v) {
     cs.view = v; $('vMap').setAttribute('aria-pressed', v === 'map'); $('vGrid').setAttribute('aria-pressed', v === 'grid');
@@ -622,23 +675,46 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
   const FRAMES = [
     { id: 'negro', label: 'Negro', bg: '#1c1b1a' },
     { id: 'blanco', label: 'Blanco', bg: '#f2f0ec' },
-    { id: 'roble', label: 'Roble', bg: 'repeating-linear-gradient(90deg,#b8905f 0 3px,#ad8454 3px 6px,#b38b5a 6px 8px)' },
-    { id: 'nogal', label: 'Nogal', bg: 'repeating-linear-gradient(90deg,#5b3d28 0 3px,#523622 3px 6px)' }
+    { id: 'madera', label: 'Madera', bg: 'repeating-linear-gradient(90deg,#b8905f 0 3px,#ad8454 3px 6px,#b38b5a 6px 8px)' }
   ];
-  const MATS = [{ id: 'sin', label: 'Sin', long: 'Sin paspartú', c: null }, { id: 'blanco', label: 'Blanco', long: 'Blanco', c: '#fbfaf6' }, { id: 'negro', label: 'Negro', long: 'Negro', c: '#1f1e1c' }];
+  const MATS = [{ id: 'sin', label: 'Sin', long: 'Sin paspartú', c: null }, { id: 'blanco', label: 'Blanco', long: 'Blanco', c: '#fbfaf6' }, { id: 'negro', label: 'Negro', long: 'Negro', c: '#1f1e1c', ask: true }];
   const EDGES = [{ id: 'wrap', label: 'Envolvente' }, { id: 'blanco', label: 'Blanco', c: '#f2f0ec', cd: '#dcd8d0' }, { id: 'negro', label: 'Negro', c: '#1c1b1a', cd: '#0f0f0e' }];
   const ORIENTS = [{ id: 'v', label: 'Vertical', icon: [12, 17] }, { id: 'h', label: 'Horizontal', icon: [17, 12] }, { id: 'q', label: 'Cuadrado', icon: [14, 14] }];
-  const SIZES = { v: [[30, 45], [50, 75], [70, 105]], h: [[45, 30], [75, 50], [105, 70]], q: [[30, 30], [50, 50], [70, 70]] };
+  const FINISHES = { print: 'Sin montaje', marco: 'Con marco', canvas: 'Canvas' };
+  const PR = D.pricing;
+  const MOLD = 2, DEPTH = 2; // la moldura va dentro de la medida total del marco
+  const money = (n) => '$' + Math.round(n).toLocaleString('es-AR');
   const NAMES = ['', 'Obra única', 'Díptico', 'Tríptico'];
   const first3 = W.map((w, i) => i).filter((i) => W[i].fmt === W[0].fmt).slice(0, 3);
-  const ps = { qty: 1, slots: [first3[0] ?? 0, first3[1] ?? 1, first3[2] ?? 2], rot: [0, 0, 0], off: [[0, 0], [0, 0], [0, 0]], fit: 'cover', active: 0, hover: null, orient: W[0].fmt, size: 1, finish: 'marco', frame: 'negro', custom: '#7a5c8e', mat: 'blanco', edge: 'wrap', open: null, tab: 'obras', set: null };
-  const up = (patch) => { Object.assign(ps, { set: null }, patch); renderP(); };
+  const ps = { qty: 1, slots: [first3[0] ?? 0, first3[1] ?? 1, first3[2] ?? 2], rot: [0, 0, 0], off: [[0, 0], [0, 0], [0, 0]], fit: 'cover', active: 0, hover: null, orient: W[0].fmt, size: 1, other: false, finish: 'marco', frame: 'negro', custom: '#7a5c8e', mat: 'blanco', edge: 'wrap', open: null, tab: 'obras', set: null };
   const frameOf = () => (ps.frame === 'custom' ? { id: 'custom', label: 'A medida', bg: ps.custom } : FRAMES.find((f) => f.id === ps.frame));
+  const matOf = () => MATS.find((m) => m.id === ps.mat);
+  const withMat = () => ps.finish === 'marco' && ps.mat !== 'sin';
+  const listKey = () => (ps.finish === 'marco' ? (ps.mat === 'sin' ? 'marco' : 'marco_mat') : ps.finish);
+  function optsList(key = listKey(), orient = ps.orient) {
+    if (orient === 'q') return PR.square.map((s) => { const m = key === 'marco_mat' ? 5 : 0; return { w: s, h: s, pw: s - 2 * m, ph: s - 2 * m, mat: m, p: null }; });
+    return PR[key].map((o) => (orient === 'h' ? { ...o, w: o.h, h: o.w, pw: o.ph, ph: o.pw } : { ...o }));
+  }
+  const curOpt = () => { const l = optsList(); return l[Math.min(ps.size, l.length - 1)]; };
+  function keepSize(patch) { // conserva la medida más parecida al cambiar de terminación, paspartú u orientación
+    const prev = curOpt(); Object.assign(ps, patch);
+    const l = optsList(); let best = 0, bd = Infinity;
+    l.forEach((o, i) => { const d = Math.abs(o.w * o.h - prev.w * prev.h) + (o.w === prev.w && o.h === prev.h ? -1e9 : 0); if (d < bd) { bd = d; best = i; } });
+    ps.size = best;
+  }
+  function askReason() {
+    if (ps.orient === 'q') return 'Medidas cuadradas: consultá disponibilidad.';
+    if (ps.other) return 'Otras medidas: consultá opciones y disponibilidad.';
+    if (ps.finish === 'marco' && matOf().ask) return 'Paspartú negro: consultá disponibilidad.';
+    return '';
+  }
   const shownP = (i) => (i === ps.active && ps.hover !== null ? ps.hover : ps.slots[i]);
+  const up = (patch) => { Object.assign(ps, { set: null }, patch); renderP(); };
   const chev = '<svg class="ch" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>';
 
   function tryOn(i) {
-    ps.slots[ps.active] = i; ps.rot[ps.active] = 0; ps.off[ps.active] = [0, 0]; ps.orient = W[i].fmt; ps.hover = null; ps.set = null;
+    ps.slots[ps.active] = i; ps.rot[ps.active] = 0; ps.off[ps.active] = [0, 0]; ps.hover = null; ps.set = null;
+    if (ps.orient !== 'q') keepSize({ orient: W[i].fmt });
     location.hash = '#probador';
   }
 
@@ -651,15 +727,15 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
     renderPieces(); renderTray();
   }
   function renderPieces() {
-    const isM = ps.finish === 'marco';
-    const d = SIZES[ps.orient][ps.size];
-    const fr = frameOf(); const mt = MATS.find((m) => m.id === ps.mat); const ed = EDGES.find((e) => e.id === ps.edge);
-    const fcm = isM ? 3 : 0, mcm = isM && mt.c ? 6 : 0, gap = 10;
-    const pw = d[0] + 2 * (fcm + mcm), ph = d[1] + 2 * (fcm + mcm);
-    const tot = ps.qty * pw + (ps.qty - 1) * gap;
+    const o = curOpt(), isM = ps.finish === 'marco', isC = ps.finish === 'canvas';
+    const fr = frameOf(), mt = matOf(), ed = EDGES.find((e) => e.id === ps.edge);
+    const mold = isM ? MOLD : 0, dep = isC ? DEPTH : 0, gap = 10;
+    const ow = o.w + dep, oh = o.h + dep;
+    const iw = o.w - 2 * mold, ih = o.h - 2 * mold, vw = Math.min(o.pw, iw), vh = Math.min(o.ph, ih);
+    const tot = ps.qty * ow + (ps.qty - 1) * gap;
     const wa = $('wallarea'); const aw = wa.clientWidth - (mob() ? 48 : 120); const ah = wa.clientHeight - (mob() ? 70 : 60);
-    const sc = Math.max(0.5, Math.min(4.2, aw / tot, ah / ph));
-    const BW = d[0] * sc, BH = d[1] * sc, multi = ps.qty > 1;
+    const sc = Math.max(0.5, Math.min(4.6, aw / tot, ah / oh));
+    const BW = vw * sc, BH = vh * sc, multi = ps.qty > 1;
     let h = ''; geom = [];
     for (let i = 0; i < ps.qty; i++) {
       const w = W[shownP(i)], r = ps.rot[i], turned = r % 180 !== 0;
@@ -670,9 +746,13 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
       geom[i] = { ox, oy, r };
       const pan = ox > 1 || oy > 1;
       const eC = ps.edge === 'wrap' ? w.edge : ed.c, eD = ps.edge === 'wrap' ? w.edgeD : ed.cd;
-      const frSt = isM ? `padding:${fcm * sc}px;background:${fr.bg};box-shadow:0 2px 3px rgba(0,0,0,.18),0 26px 44px -16px rgba(50,38,26,.45)` : `padding:0;border-right:${2.2 * sc}px solid ${eC};border-bottom:${2.2 * sc}px solid ${eD};box-shadow:0 26px 44px -16px rgba(50,38,26,.5)`;
+      const shadow = 'box-shadow:0 2px 3px rgba(0,0,0,.18),0 26px 44px -16px rgba(50,38,26,.45)';
+      const frSt = isM ? `padding:${mold * sc}px;background:${fr.bg};${shadow}`
+        : isC ? `padding:0;border-right:${dep * sc}px solid ${eC};border-bottom:${dep * sc}px solid ${eD};box-shadow:0 26px 44px -16px rgba(50,38,26,.5)`
+        : `padding:0;${shadow}`;
+      const mtSt = `width:${iw * sc}px;height:${ih * sc}px;display:flex;align-items:center;justify-content:center;background:${withMat() ? mt.c : 'transparent'}`;
       h += `<button class="piece${multi && i === ps.active ? ' act' : ''}" data-slot="${i}" aria-label="Lugar ${i + 1}: ${esc(w.t)}">
-        <div class="ring"><div class="fr" style="${frSt}"><div class="mt" style="padding:${mcm * sc}px;background:${isM && mt.c ? mt.c : 'transparent'}">
+        <div class="ring"><div class="fr" style="${frSt}"><div class="mt" style="${mtSt}">
         <div class="bx ld${pan ? ' pan' : ''}" data-bx="${i}" style="width:${BW}px;height:${BH}px"><img src="${w.img}" alt="" draggable="false" style="width:${ew}px;height:${eh}px;transform:${imgTf(i, ox, oy, r)}"></div></div></div></div>
         ${multi ? `<span class="pl">${i + 1} · ${esc(w.t)}</span>` : ''}</button>`;
     }
@@ -686,19 +766,18 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
   }
 
   function renderDock() {
-    const isM = ps.finish === 'marco';
     document.querySelectorAll('[data-a="finish"]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.v === ps.finish));
-    const fr = frameOf(), mt = MATS.find((m) => m.id === ps.mat), ed = EDGES.find((e) => e.id === ps.edge), o = ORIENTS.find((x) => x.id === ps.orient), d = SIZES[ps.orient][ps.size];
+    const fr = frameOf(), mt = matOf(), ed = EDGES.find((e) => e.id === ps.edge), or = ORIENTS.find((x) => x.id === ps.orient), o = curOpt();
     const cur = W[shownP(0)];
     const sec = (id, sw, small, big) => `<button class="sec" data-a="open" data-v="${id}" aria-expanded="${ps.open === id}">${sw}<span class="sl"><small>${small}</small><b>${esc(big)}</b></span>${chev}</button>`;
     let h = '';
-    if (isM) {
+    if (ps.finish === 'marco') {
       h += sec('marco', `<span class="sw" style="background:${fr.bg}"></span>`, 'Marco', fr.label);
-      h += sec('mat', `<span class="sw" style="border-radius:3px;${mt.c ? 'background:' + mt.c : 'border:1px dashed #8a8175'}"></span>`, 'Paspartú', mt.label);
-    } else {
-      h += sec('edge', `<span class="sw" style="border-radius:2px;background:${ps.edge === 'wrap' ? `url(${cur.sm}) center/cover` : ed.c}"></span>`, 'Borde del canvas', ed.label);
+      h += sec('mat', `<span class="sw" style="border-radius:3px;${mt.c ? 'background:' + mt.c : 'border:1px dashed #8a8175'}"></span>`, 'Paspartú', mt.label) + '<span class="vr"></span>';
+    } else if (ps.finish === 'canvas') {
+      h += sec('edge', `<span class="sw" style="border-radius:2px;background:${ps.edge === 'wrap' ? `url(${cur.sm}) center/cover` : ed.c}"></span>`, 'Borde del canvas', ed.label) + '<span class="vr"></span>';
     }
-    h += '<span class="vr"></span>' + sec('format', `<span style="width:${o.icon[0]}px;height:${o.icon[1]}px;border:1.5px solid currentColor;border-radius:2px;flex-shrink:0"></span>`, 'Formato', `${o.label} · ${d[0]}×${d[1]}`);
+    h += sec('format', `<span style="width:${or.icon[0]}px;height:${or.icon[1]}px;border:1.5px solid currentColor;border-radius:2px;flex-shrink:0"></span>`, ps.finish === 'marco' ? 'Medida del marco' : 'Medida', ps.other ? 'Otra medida' : `${or.label} · ${o.w}×${o.h}`);
     const cr = ps.rot[ps.qty > 1 ? ps.active : 0];
     h += '<span class="vr"></span>' + sec('img', '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="1"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-8 9"/></svg>', 'Imagen', `${ps.fit === 'cover' ? 'Llenar' : 'Completa'} · ${cr}°`);
     $('bar').innerHTML = h;
@@ -714,15 +793,20 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
     let h = '';
     if (ps.open === 'marco') {
       h = `<div class="opts">${FRAMES.map((f) => `<button class="opt" data-a="frame" data-v="${f.id}" aria-pressed="${f.id === ps.frame}"><span class="s" style="background:${f.bg}"></span>${f.label}</button>`).join('')}
-        <label class="opt" aria-pressed="${ps.frame === 'custom'}"><span class="s" style="background:${ps.frame === 'custom' ? ps.custom : 'conic-gradient(#d9534f,#e8b04a,#8fbf6a,#4aa3c2,#7a5c8e,#d9534f)'}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span>A medida<input type="color" id="customColor" value="${ps.custom}" aria-label="Elegir color de marco a medida"></label></div>`;
+        <label class="opt" aria-pressed="${ps.frame === 'custom'}"><span class="s" style="background:${ps.frame === 'custom' ? ps.custom : 'conic-gradient(#d9534f,#e8b04a,#8fbf6a,#4aa3c2,#7a5c8e,#d9534f)'}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span>A medida<input type="color" id="customColor" value="${ps.custom}" aria-label="Elegir color de marco a medida"></label></div>
+        ${ps.frame === 'custom' ? '<span class="hint">Color a medida: consultá disponibilidad.</span>' : ''}`;
     } else if (ps.open === 'mat') {
-      h = `<div class="opts">${MATS.map((m) => `<button class="opt" data-a="mat" data-v="${m.id}" aria-pressed="${m.id === ps.mat}"><span class="s sq" style="${m.c ? 'background:' + m.c : 'border:1px dashed #8a8175'}"><span style="width:14px;height:14px;background:#9fb3b6"></span></span>${m.long}</button>`).join('')}</div>`;
+      h = `<div class="opts">${MATS.map((m) => `<button class="opt" data-a="mat" data-v="${m.id}" aria-pressed="${m.id === ps.mat}"><span class="s sq" style="${m.c ? 'background:' + m.c : 'border:1px dashed #8a8175'}"><span style="width:14px;height:14px;background:#9fb3b6"></span></span>${m.long}${m.ask ? '<small class="ask">a consultar</small>' : ''}</button>`).join('')}</div>`;
     } else if (ps.open === 'edge') {
       const cur = W[shownP(0)];
       h = `<div class="opts">${EDGES.map((e) => `<button class="opt" data-a="edge" data-v="${e.id}" aria-pressed="${e.id === ps.edge}"><span class="s sq" style="background:${e.id === 'wrap' ? `url(${cur.sm}) center/cover` : e.c}"></span>${e.label}</button>`).join('')}</div>`;
     } else if (ps.open === 'format') {
-      h = `<span class="hint">Forma del cuadro</span><div class="opts">${ORIENTS.map((o) => `<button class="chip" data-a="orient" data-v="${o.id}" aria-pressed="${o.id === ps.orient}"><span style="width:${o.icon[0]}px;height:${o.icon[1]}px;border:1.5px solid currentColor;border-radius:2px"></span>${o.label}</button>`).join('')}</div>
-        <div class="opts">${SIZES[ps.orient].map((d, i) => `<button class="chip" data-a="size" data-v="${i}" aria-pressed="${i === ps.size}">${d[0]} × ${d[1]} cm</button>`).join('')}</div>`;
+      const l = optsList();
+      const hint = ps.finish === 'marco' ? 'Medida total del marco' + (withMat() ? ' (la foto va adentro, con borde blanco)' : '') : ps.finish === 'canvas' ? 'Medida del canvas' : 'Medida de la impresión';
+      h = `<div class="opts">${ORIENTS.map((o) => `<button class="chip" data-a="orient" data-v="${o.id}" aria-pressed="${o.id === ps.orient}"><span style="width:${o.icon[0]}px;height:${o.icon[1]}px;border:1.5px solid currentColor;border-radius:2px"></span>${o.label}</button>`).join('')}</div>
+        <span class="hint">${hint}</span>
+        <div class="opts">${l.map((o, i) => `<button class="szchip" data-a="size" data-v="${i}" aria-pressed="${!ps.other && i === Math.min(ps.size, l.length - 1)}"><b>${o.w}×${o.h}</b><small>${o.p ? money(o.p) : 'a consultar'}${withMat() && o.pw !== o.w ? ` · foto ${o.pw}×${o.ph}` : ''}</small></button>`).join('')}
+        <button class="szchip" data-a="other" aria-pressed="${ps.other}"><b>Otra medida</b><small>a consultar</small></button></div>`;
     } else if (ps.open === 'img') {
       const multi = ps.qty > 1, k = multi ? ps.active : 0, cr = ps.rot[k], g = geom[k] || { ox: 0, oy: 0 };
       const cx = g.ox > 1, cy = g.oy > 1, o = ps.off[k];
@@ -740,7 +824,48 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
         </div>`;
     }
     t.innerHTML = h;
-    const cc = $('customColor'); if (cc) cc.addEventListener('input', (e) => { ps.custom = e.target.value; ps.frame = 'custom'; ps.set = null; renderPieces(); renderDock(); });
+    const cc = $('customColor'); if (cc) cc.addEventListener('input', (e) => { ps.custom = e.target.value; ps.frame = 'custom'; ps.set = null; renderPieces(); renderDock(); renderQuote(); });
+  }
+
+  /* ---------- tarjeta "Tu cuadro": esquema a escala + precio ---------- */
+  function specText() {
+    const o = curOpt(), fr = frameOf(), mt = matOf(), ed = EDGES.find((e) => e.id === ps.edge);
+    const size = ps.other ? 'otra medida' : `${o.w}×${o.h} cm`;
+    if (ps.finish === 'print') return `Impresión sin montaje · ${size}`;
+    if (ps.finish === 'canvas') return `Canvas · ${size} · borde ${ed.label.toLowerCase()}`;
+    return `Marco ${fr.label.toLowerCase()} ${size}` + (withMat() ? ` · paspartú ${mt.label.toLowerCase()}${ps.other ? '' : ` ${o.mat} cm · foto ${o.pw}×${o.ph}`}` : ' · sin paspartú');
+  }
+  function renderQuote() {
+    const o = curOpt(), w = W[ps.slots[ps.active]] || W[0];
+    const isM = ps.finish === 'marco', isC = ps.finish === 'canvas';
+    const mold = isM ? MOLD : 0, ow = o.w, oh = o.h;
+    const vw = Math.min(o.pw, o.w - 2 * mold), vh = Math.min(o.ph, o.h - 2 * mold);
+    const k = 74 / Math.max(ow, oh), px = (v) => (v * k).toFixed(2);
+    const fr = frameOf(), mt = matOf();
+    const fill = isM ? (fr.id === 'madera' ? '#b38b5a' : fr.bg) : isC ? '#3a3631' : 'none';
+    const mx = (ow - vw) / 2, my = (oh - vh) / 2;
+    const svg = `<svg viewBox="0 0 ${px(ow)} ${px(oh)}" width="${px(ow)}" height="${px(oh)}" aria-hidden="true">
+      ${isM || isC ? `<rect x="0" y="0" width="${px(ow)}" height="${px(oh)}" fill="${fill}"/>` : ''}
+      ${isM ? `<rect x="${px(mold)}" y="${px(mold)}" width="${px(o.w - 2 * mold)}" height="${px(o.h - 2 * mold)}" fill="${withMat() ? mt.c : '#ddd'}"/>` : ''}
+      <defs><clipPath id="qclip"><rect x="${px(mx)}" y="${px(my)}" width="${px(vw)}" height="${px(vh)}"/></clipPath></defs>
+      <image href="${w.sm}" x="${px(mx)}" y="${px(my)}" width="${px(vw)}" height="${px(vh)}" preserveAspectRatio="xMidYMid slice" clip-path="url(#qclip)"/>
+      ${!isM && !isC ? `<rect x="${px(mx)}" y="${px(my)}" width="${px(vw)}" height="${px(vh)}" fill="none" stroke="#cfc6b8" stroke-width=".6"/>` : ''}
+    </svg>`;
+    const dims = [];
+    if (isM) { dims.push(['Marco', ps.other ? 'a medida' : `${o.w}×${o.h} cm`]); if (withMat() && !ps.other) { dims.push(['Borde', `${o.mat} cm por lado`]); dims.push(['Foto', `${o.pw}×${o.ph} cm`]); } }
+    else dims.push([isC ? 'Canvas' : 'Impresión', ps.other ? 'a medida' : `${o.w}×${o.h} cm`]);
+    const reason = askReason();
+    const each = reason ? null : o.p;
+    const price = each ? `<b class="qp">${money(each)}</b>${ps.qty > 1 ? `<small> c/u · total ${money(each * ps.qty)}</small>` : ''}` : '<b class="qp qask">A consultar</b>';
+    const note = [reason, ps.frame === 'custom' && isM ? 'Color de marco a medida: consultá disponibilidad.' : ''].filter(Boolean).join(' ');
+    const mat = isC ? 'Lienzo 260 g · tintas Fine Art · bastidor 2×2 cm' : 'Hahnemühle Photo Rag Baryta · 100% algodón';
+    $('quote').innerHTML = `<div class="qd">${svg}</div>
+      <div class="qt"><span class="eyebrow">Tu cuadro${ps.qty > 1 ? ` · ${ps.qty} piezas` : ''}</span>
+        <dl>${dims.map(([a, b]) => `<dt>${a}</dt><dd>${b}</dd>`).join('')}</dl>
+        <div class="qprice">${price}</div>
+        <small class="qnote">${note ? esc(note) + ' ' : ''}Precio estimado · envío aparte · <a href="#impresion">${esc(mat)}</a></small></div>`;
+    const names = ps.slots.slice(0, ps.qty).map((k2) => W[k2].t);
+    $('consult').href = consultLink(`${ps.qty > 1 ? NAMES[ps.qty] + ': ' : ''}${names.join(' + ')} — ${specText()}${each ? ` — precio estimado ${money(each)}${ps.qty > 1 ? ' c/u' : ''}` : ''}`);
   }
 
   function renderList() {
@@ -759,11 +884,7 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
       $('phelp').textContent = 'Combinaciones pensadas para colgar juntas. Elegí una y después cambiá lo que quieras.';
       $('plist').innerHTML = D.sets.map((s, k) => `<button class="setcard${ps.set === k ? ' on' : ''}" data-set="${k}"><span class="mini">${s.works.map((i) => { const tb = s.orient === 'h' ? [30, 20] : [20, 30]; return `<img src="${W[i].sm}" alt="" style="width:${tb[0]}px;height:${tb[1]}px">`; }).join('')}</span><span><b>${esc(s.name)}</b><small>${esc(s.desc)}</small></span></button>`).join('');
     }
-    const isM = ps.finish === 'marco', d = SIZES[ps.orient][ps.size], fr = frameOf(), mt = MATS.find((m) => m.id === ps.mat), ed = EDGES.find((e) => e.id === ps.edge);
-    const spec = `${isM ? 'marco ' + fr.label.toLowerCase() + ', ' + (mt.c ? 'paspartú ' + mt.label.toLowerCase() : 'sin paspartú') : 'canvas, borde ' + ed.label.toLowerCase()} · ${d[0]}×${d[1]} cm${ps.qty > 1 ? ' c/u' : ''}`;
-    $('sum').textContent = `${ps.qty} ${ps.qty === 1 ? 'obra' : 'obras'} · ${spec}`;
-    const names = ps.slots.slice(0, ps.qty).map((k) => W[k].t);
-    $('consult').href = consultLink(`${ps.qty > 1 ? NAMES[ps.qty] + ': ' : ''}${names.join(' + ')} — ${spec}`);
+    renderQuote();
   }
 
   function renderP() { if ($('v-probador').hidden) return; renderPieces(); renderDock(); renderList(); }
@@ -782,13 +903,15 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
     const b = e.target.closest('[data-a]'); if (!b) return;
     const a = b.dataset.a, v = b.dataset.v;
     if (a === 'open') { ps.open = ps.open === v ? null : v; renderDock(); return; }
-    if (a === 'finish') up({ finish: v, open: ['marco', 'mat', 'edge'].includes(ps.open) ? null : ps.open });
+    ps.set = null;
+    if (a === 'finish') { keepSize({ finish: v, other: false, open: ['marco', 'mat', 'edge'].includes(ps.open) ? null : ps.open }); renderP(); }
     else if (a === 'qty') { const q = Math.max(1, Math.min(3, ps.qty + +v)); up({ qty: q, active: Math.min(ps.active, q - 1) }); }
     else if (a === 'frame') up({ frame: v });
-    else if (a === 'mat') up({ mat: v });
+    else if (a === 'mat') { keepSize({ mat: v }); renderP(); }
     else if (a === 'edge') up({ edge: v });
-    else if (a === 'orient') up({ orient: v });
-    else if (a === 'size') up({ size: +v });
+    else if (a === 'orient') { keepSize({ orient: v }); renderP(); }
+    else if (a === 'size') up({ size: +v, other: false });
+    else if (a === 'other') up({ other: true });
     else if (a === 'fit') up({ fit: v });
     else if (a === 'rot') { const k = ps.qty > 1 ? ps.active : 0; ps.rot[k] = (ps.rot[k] + +v + 360) % 360; ps.off[k] = [0, 0]; up({}); }
     else if (a === 'nudge') { const [x, y] = v.split(',').map(Number); nudge(x * 0.25, y * 0.25); }
@@ -816,11 +939,28 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
   $('plist').addEventListener('click', (e) => {
     const r = e.target.closest('[data-w]'), s = e.target.closest('[data-set]');
     if (r) { const i = +r.dataset.w; ps.slots[ps.active] = i; ps.rot[ps.active] = 0; ps.off[ps.active] = [0, 0]; ps.hover = null; ps.set = null; if (ps.qty > 1) ps.active = (ps.active + 1) % ps.qty; renderP(); if (mob()) $('stage').scrollIntoView({ behavior: 'smooth' }); }
-    if (s) { const k = +s.dataset.set, st = D.sets[k]; Object.assign(ps, { qty: st.works.length, slots: st.works.concat(ps.slots).slice(0, 3), rot: [0, 0, 0], off: [[0, 0], [0, 0], [0, 0]], orient: st.orient, size: 1, finish: 'marco', frame: st.frame, mat: st.mat, fit: 'cover', active: 0, hover: null, open: null, set: k }); renderP(); }
+    if (s) {
+      const k = +s.dataset.set, st = D.sets[k];
+      Object.assign(ps, { qty: st.works.length, slots: st.works.concat(ps.slots).slice(0, 3), rot: [0, 0, 0], off: [[0, 0], [0, 0], [0, 0]], orient: st.orient, finish: 'marco', frame: st.frame, mat: st.mat, other: false, fit: 'cover', active: 0, hover: null, open: null });
+      const l = optsList(); ps.size = Math.min(1, l.length - 1); ps.set = k; renderP();
+    }
   });
   $('plist').addEventListener('mouseover', (e) => { if (mob() || ps.tab !== 'obras') return; const r = e.target.closest('[data-w]'); if (r && ps.hover !== +r.dataset.w) { ps.hover = +r.dataset.w; renderPieces(); } });
   $('plist').addEventListener('mouseleave', () => { if (ps.hover !== null) { ps.hover = null; renderPieces(); } });
   let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if (!$('v-probador').hidden) renderPieces(); }, 120); });
+
+  /* ================= IMPRESIÓN Y PRECIOS ================= */
+  function renderPrices() {
+    const rows = [
+      ['Sin montaje', 'Solo la impresión, en la medida indicada', PR.print.map((o) => [`${o.w}×${o.h}`, o.p])],
+      ['Con marco', 'Sin paspartú · medida total del marco', PR.marco.map((o) => [`${o.w}×${o.h}`, o.p])],
+      ['Con marco y paspartú', 'Borde blanco · medida del marco (foto)', PR.marco_mat.map((o) => [`${o.w}×${o.h} <small>(foto ${o.pw}×${o.ph})</small>`, o.p])],
+      ['Canvas', 'Sobre bastidor de 2×2 cm', PR.canvas.map((o) => [`${o.w}×${o.h}`, o.p])]
+    ];
+    const all = rows.flatMap((r) => r[2].map((x) => x[1]));
+    $('priceRange').textContent = `Desde ${money(Math.min(...all))} hasta ${money(Math.max(...all))} por obra`;
+    $('priceTable').innerHTML = rows.map(([t, sub, items]) => `<div class="pcol"><h4>${t}</h4><small>${sub}</small><ul>${items.map(([s, p]) => `<li><span>${s}</span><span>${money(p)}</span></li>`).join('')}</ul></div>`).join('');
+  }
 
   /* ================= CONTACTO ================= */
   function consultLink(what) {
@@ -854,7 +994,7 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
     Promise.race([Promise.all(wait), new Promise((r) => setTimeout(r, 6000))]).then(() => setTimeout(() => $('loader').classList.add('done'), 250));
   }
 
-  renderAbout(); setView('map'); route(); hideLoader();
+  renderAbout(); renderPrices(); setView('map'); route(); hideLoader();
 })();
 </script>
 </body>
