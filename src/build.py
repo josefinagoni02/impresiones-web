@@ -143,7 +143,7 @@ def main():
             'extent': {'lat0': lat0, 'lat1': lat1, 'lon0': lon0, 'lon1': lon1},
             'oceans': [{'name': 'Océano Pacífico', 'lat': -8, 'lon': -112}, {'name': 'Océano Atlántico', 'lat': 24, 'lon': -68}]}
     tpl = open(os.path.join(ROOT, 'src', 'template.html')).read()
-    desc = config['tagline'] or 'Fotografías impresas en marco o canvas. Recorré el atlas de obras y probalas en tu pared.'
+    desc = config['tagline'] or 'Un pedacito fotográfico del mundo en mi atlas personal. Te invito a explorar cada lugar desde el mapa, o recorrer la grilla de norte a sur.'
     html = (tpl.replace('__SITE_NAME__', config['name']).replace('__SITE_DESC__', desc)
             .replace('__DATA__', json.dumps(data, ensure_ascii=False).replace('</', '<\\/')))
     open(os.path.join(ROOT, 'index.html'), 'w').write(html)
