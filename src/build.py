@@ -26,9 +26,15 @@ LUGARES = {
     'caba': (-34.6037, -58.3816, 'Obelisco', 'Argentina'),
     'tafí': (-26.8527, -65.7098, 'Tafí del Valle', 'Argentina'),
     'tafi': (-26.8527, -65.7098, 'Tafí del Valle', 'Argentina'),
+    'jardín botánico': (-34.5823, -58.4168, 'Jardín Botánico', 'Argentina'),
+    'jardin botanico': (-34.5823, -58.4168, 'Jardín Botánico', 'Argentina'),
+    'mar del plata': (-38.0055, -57.5426, 'Mar del Plata', 'Argentina'),
+    'las criollas': (-26.6200, -65.4200, 'Las Criollas', 'Argentina'),  # aprox. (CP 4122, Tucumán)
+    'bolsón': (-41.9644, -71.5332, 'El Bolsón', 'Argentina'),
+    'bolson': (-41.9644, -71.5332, 'El Bolsón', 'Argentina'),
 }
 REGION_TXT = {'Estados Unidos': 'California, EE.UU.', 'Argentina': 'Buenos Aires, Argentina'}
-REGION = {'obelisco': 'Buenos Aires', 'capital federal': 'Buenos Aires', 'caba': 'Buenos Aires', 'golden gate': 'California', 'san francisco': 'California', 'tigre': 'Buenos Aires', 'tafí': 'Tucumán', 'tafi': 'Tucumán'}
+REGION = {'obelisco': 'Buenos Aires', 'capital federal': 'Buenos Aires', 'caba': 'Buenos Aires', 'golden gate': 'California', 'san francisco': 'California', 'tigre': 'Buenos Aires', 'tafí': 'Tucumán', 'tafi': 'Tucumán', 'jardín botánico': 'Buenos Aires', 'jardin botanico': 'Buenos Aires', 'mar del plata': 'Buenos Aires', 'las criollas': 'Tucumán', 'bolsón': 'Patagonia', 'bolson': 'Patagonia'}
 # Precios de venta (opción B: 30% de margen sobre el precio, redondeado a $500). Medidas en vertical.
 PRECIOS = {
     'print': [dict(w=20, h=30, pw=20, ph=30, p=15500), dict(w=30, h=40, pw=30, ph=40, p=31000), dict(w=40, h=60, pw=40, ph=60, p=62000)],
