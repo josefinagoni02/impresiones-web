@@ -494,7 +494,8 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
   /* ================= CATÁLOGO ================= */
   const TONES = D.tones;
   const SERIES = ['Todas'].concat([...new Set(W.map((w) => w.serie).filter(Boolean))]);
-  const cs = { view: 'map', sel: 0, hover: null, serie: 0, tone: 0, q: '' };
+  const START = Math.max(0, W.findIndex((w) => /^ciudad embl/i.test(w.t))); // obra que se ve primero
+  const cs = { view: 'map', sel: START, hover: null, serie: 0, tone: 0, q: '' };
   let stopAt = null; // lugar donde el visitante frenó el pase automático
   const places = [];
   W.forEach((w, i) => { let p = places.find((x) => x.short === w.short && x.country === w.country); if (!p) { p = { short: w.short, country: w.country, region: w.region || w.country, lat: w.lat, lon: w.lon, ids: [] }; places.push(p); } p.ids.push(i); });
@@ -810,8 +811,8 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
   const MOLD = 2, DEPTH = 2; // la moldura va dentro de la medida total del marco
   const money = (n) => '$' + Math.round(n).toLocaleString('es-AR');
   const NAMES = ['', 'Obra única', 'Díptico', 'Tríptico'];
-  const first3 = W.map((w, i) => i).filter((i) => W[i].fmt === W[0].fmt).slice(0, 3);
-  const ps = { qty: 1, slots: [first3[0] ?? 0, first3[1] ?? 1, first3[2] ?? 2], rot: [0, 0, 0], off: [[0, 0], [0, 0], [0, 0]], fit: 'cover', active: 0, hover: null, orient: W[0].fmt, size: 1, other: false, finish: 'marco', frame: 'negro', custom: '#7a5c8e', mat: 'blanco', edge: 'wrap', open: null, tab: 'obras', set: null };
+  const first3 = [START, ...W.map((w, i) => i).filter((i) => i !== START && W[i].fmt === W[START].fmt)].slice(0, 3);
+  const ps = { qty: 1, slots: [first3[0] ?? 0, first3[1] ?? 1, first3[2] ?? 2], rot: [0, 0, 0], off: [[0, 0], [0, 0], [0, 0]], fit: 'cover', active: 0, hover: null, orient: W[START].fmt, size: 1, other: false, finish: 'marco', frame: 'negro', custom: '#7a5c8e', mat: 'blanco', edge: 'wrap', open: null, tab: 'obras', set: null };
   const frameOf = () => (ps.frame === 'custom' ? { id: 'custom', label: 'A medida', bg: ps.custom } : FRAMES.find((f) => f.id === ps.frame));
   const matOf = () => MATS.find((m) => m.id === ps.mat);
   const withMat = () => ps.finish === 'marco' && ps.mat !== 'sin';
