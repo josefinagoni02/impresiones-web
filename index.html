@@ -330,7 +330,8 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
 .orow .mini{width:72px;height:80px;display:flex;align-items:center;justify-content:center}
 .orow .nm{font-family:var(--display);font-size:24px;line-height:1}
 .orow .nm small{font-family:var(--mono);font-size:10px;color:var(--faint);margin-right:8px}
-.orow .sp{font-size:12px;color:var(--muted);margin-top:4px}
+.orow .sp{font-size:13px;color:#4a443c;margin-top:6px}
+.orow .sp2{font-size:12px;color:var(--faint);margin-top:2px}
 .orow .pr{font-size:15px;font-variant-numeric:tabular-nums;white-space:nowrap}
 .osum{display:flex;flex-direction:column;gap:12px;padding-top:8px}
 .osum .tl{font-size:12px;color:var(--faint)}
@@ -784,7 +785,7 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
       h += `<button class="piece${multi && i === ps.active ? ' act' : ''}" data-slot="${i}" aria-label="Lugar ${i + 1}: ${esc(w.t)}">
         <div class="ring"><div class="fr" style="${frSt}"><div class="mt" style="${mtSt}">
         <div class="bx ld${pan ? ' pan' : ''}" data-bx="${i}" style="width:${BW}px;height:${BH}px"><img src="${w.img}" alt="" draggable="false" style="width:${ew}px;height:${eh}px;transform:${imgTf(i, ox, oy, r)}"></div></div></div></div>
-        <span class="pl">${multi ? `<small>${String(i + 1).padStart(2, '0')}</small>` : ''}${esc(w.t)}</span></button>`;
+        </button>`;
     }
     $('comp').innerHTML = h;
     $('comp').style.gap = gap * sc + 'px';
@@ -826,7 +827,7 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
         <label class="opt" aria-pressed="${ps.frame === 'custom'}"><span class="s" style="background:${ps.frame === 'custom' ? ps.custom : 'conic-gradient(#d9534f,#e8b04a,#8fbf6a,#4aa3c2,#7a5c8e,#d9534f)'}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span>A medida<input type="color" id="customColor" value="${ps.custom}" aria-label="Elegir color de marco a medida"></label></div>
         ${ps.frame === 'custom' ? '<span class="hint">Color a medida: consultá disponibilidad.</span>' : ''}`;
     } else if (ps.open === 'mat') {
-      h = `<div class="opts">${MATS.map((m) => `<button class="opt" data-a="mat" data-v="${m.id}" aria-pressed="${m.id === ps.mat}"><span class="s sq" style="${m.c ? 'background:' + m.c : 'border:1px dashed #8a8175'}"><span style="width:14px;height:14px;background:#9fb3b6"></span></span>${m.long}${m.ask ? '<small class="ask">a consultar</small>' : ''}</button>`).join('')}</div>`;
+      h = `<div class="opts">${MATS.map((m) => `<button class="opt" data-a="mat" data-v="${m.id}" aria-pressed="${m.id === ps.mat}"><span class="s sq" style="${m.c ? 'background:' + m.c : 'border:1px dashed #8a8175'}"><span style="width:14px;height:14px;background:#9fb3b6"></span></span>${m.long}</button>`).join('')}</div>`;
     } else if (ps.open === 'edge') {
       const cur = W[shownP(0)];
       h = `<div class="opts">${EDGES.map((e) => `<button class="opt" data-a="edge" data-v="${e.id}" aria-pressed="${e.id === ps.edge}"><span class="s sq" style="background:${e.id === 'wrap' ? `url(${cur.sm}) center/cover` : e.c}"></span>${e.label}</button>`).join('')}</div>`;
@@ -835,8 +836,8 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
       const hint = ps.finish === 'marco' ? 'Medida total del marco' : ps.finish === 'canvas' ? 'Medida del canvas' : 'Medida de la impresión';
       h = `<div class="opts">${ORIENTS.map((o) => `<button class="chip" data-a="orient" data-v="${o.id}" aria-pressed="${o.id === ps.orient}"><span style="width:${o.icon[0]}px;height:${o.icon[1]}px;border:1.5px solid currentColor;border-radius:2px"></span>${o.label}</button>`).join('')}</div>
         <span class="hint">${hint}</span>
-        <div class="opts">${l.map((o, i) => `<button class="szchip" data-a="size" data-v="${i}" aria-pressed="${!ps.other && i === Math.min(ps.size, l.length - 1)}"><b>${o.w}×${o.h}</b>${o.p ? '' : '<small>a consultar</small>'}</button>`).join('')}
-        <button class="szchip" data-a="other" aria-pressed="${ps.other}"><b>Otra medida</b><small>a consultar</small></button></div>`;
+        <div class="opts">${l.map((o, i) => `<button class="chip" data-a="size" data-v="${i}" aria-pressed="${!ps.other && i === Math.min(ps.size, l.length - 1)}">${o.w}×${o.h}</button>`).join('')}
+        <button class="chip" data-a="other" aria-pressed="${ps.other}">Otra medida</button></div>`;
     } else if (ps.open === 'img') {
       const multi = ps.qty > 1, k = multi ? ps.active : 0, cr = ps.rot[k], g = geom[k] || { ox: 0, oy: 0 };
       const cx = g.ox > 1, cy = g.oy > 1, o = ps.off[k];
@@ -863,7 +864,7 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
     const size = ps.other ? 'medida a consultar' : `${o.w}×${o.h}`;
     if (ps.finish === 'print') return `Impresión sin montaje ${size}`;
     if (ps.finish === 'canvas') return `Canvas ${size} · borde ${ed.label.toLowerCase()}`;
-    return `Marco ${fr.label.toLowerCase()} ${size}` + (withMat() ? ` · paspartú ${mt.label.toLowerCase()}${ps.other ? '' : ` ${o.w}×${o.h} · foto ${o.pw}×${o.ph}`}` : ' · sin paspartú');
+    return `Marco ${fr.label.toLowerCase()} ${size}` + (withMat() ? ` · paspartú ${mt.label.toLowerCase()}${ps.other ? '' : ` · tamaño foto ${o.pw}×${o.ph}`}` : ' · sin paspartú');
   }
   function miniFrame(w) {
     const o = curOpt(), isM = ps.finish === 'marco', isC = ps.finish === 'canvas', k = 70 / Math.max(o.w, o.h, 1);
@@ -879,13 +880,13 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
     const down = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
     $('tkbar').innerHTML = `<span class="k">Tu pedido</span><span class="its">${items.map((w) => `<span>${esc(w.t)}</span>`).join('')}</span><span class="sp"></span><span class="tot">${tot}</span><span class="go">Ver pedido ${down}</span>`;
     const note = [reason, ps.frame === 'custom' && ps.finish === 'marco' ? 'Color de marco a medida: consultá disponibilidad.' : ''].filter(Boolean).join(' ');
-    const mat = ps.finish === 'canvas' ? 'Lienzo de 260 g · tintas Fine Art · bastidor 2×2 cm.' : 'Impresión Fine Art en papel Hahnemühle de algodón.';
+    const mat = ps.finish === 'canvas' ? 'Canvas · lienzo de 260 g, tintas Fine Art, bastidor de 2×2 cm' : 'Impresión Fine Art · papel Hahnemühle Photo Rag Baryta, 100% algodón';
     const link = consultLink(`${ps.qty > 1 ? NAMES[ps.qty] + ': ' : ''}${items.map((w) => w.t).join(' + ')} — ${specText()}${each ? ` — precio estimado ${money(each)}${ps.qty > 1 ? ' c/u' : ''}` : ''}`);
     $('pedido').innerHTML = `<div><div class="ph"><h2>Tu pedido</h2><a href="#probador" data-up="1">↑ Volver a la pared</a></div>
-      ${items.map((w, i) => `<div class="orow"><div class="mini">${miniFrame(w)}</div><div><div class="nm"><small>${String(i + 1).padStart(2, '0')}</small>${esc(w.t)}</div><div class="sp">${esc(specText())}</div></div><span class="pr">${each ? money(each) : 'a consultar'}</span></div>`).join('')}</div>
+      ${items.map((w, i) => `<div class="orow"><div class="mini">${miniFrame(w)}</div><div><div class="nm"><small>${String(i + 1).padStart(2, '0')}</small>${esc(w.t)}</div><div class="sp">${esc(specText())}</div><div class="sp2">${esc(mat)}</div></div><span class="pr">${each ? money(each) : 'a consultar'}</span></div>`).join('')}</div>
       <div class="osum"><span class="tl">Total estimado · ${ps.qty} ${ps.qty === 1 ? 'obra' : 'obras'}</span><span class="big">${tot}</span>
-      <span class="nt">${note ? esc(note) + ' ' : ''}Precio estimado, sujeto a confirmación. El envío no está incluido y se coordina aparte. ${mat}</span>
-      <a class="btn solid" href="${esc(link)}" target="_blank" rel="noopener">Consultar por WhatsApp →</a></div>`;
+      <a class="btn solid" href="${esc(link)}" target="_blank" rel="noopener">Consultar por WhatsApp →</a>
+      <span class="nt">${note ? esc(note) + ' ' : ''}Precio estimado, sujeto a confirmación. El envío no está incluido y se coordina aparte según el destino.</span></div>`;
   }
   /* desplazamiento lento hasta el pedido (o de vuelta a la pared) */
   function slowScroll(toY, ms = 1300) {
