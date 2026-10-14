@@ -674,7 +674,7 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
   }
   function renderFicha(fade) {
     const i = shownC(), w = W[i];
-    const pl = placeOf(i);
+    const pl = groupOf(i);
     const mapv = cs.view === 'map';
     const prevSrc = fade ? ($('ficha').querySelector('.pic img:not(.prev)') || {}).src : null;
     const story = w.story ? `<p class="story">${esc(w.story)}</p>` : '';
@@ -698,6 +698,13 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
       const go = () => { requestAnimationFrame(() => old.classList.add('out')); setTimeout(() => old.remove(), 1000); };
       if (img.complete) go(); else { img.addEventListener('load', go, { once: true }); img.addEventListener('error', go, { once: true }); }
     }
+  }
+  // grupo de la ficha: en el mapa, el pin que contiene la obra (país, región o lugar); si no, el lugar exacto
+  function groupOf(i) {
+    const c = cs.view === 'map' && lastClusters.find((c) => c.hits.includes(i));
+    const pl = placeOf(i);
+    if (c && c.hits.length > pl.ids.length) return { ids: c.hits, short: c.label, key: c.hits.join(',') };
+    return { ids: pl.ids, short: pl.short, key: pl.ids.join(',') };
   }
   const priceFrom = () => { const all = ['print', 'marco', 'marco_mat', 'canvas'].flatMap((k) => D.pricing[k].map((o) => o.p)); return `desde $${Math.min(...all).toLocaleString('es-AR')}`; };
   function renderC() { renderFilters(); if (cs.view === 'map') renderMap(); else renderGrid(); renderFicha(); }
@@ -728,9 +735,9 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
       else if (mob()) setTimeout(() => $('ficha').scrollIntoView({ behavior: 'smooth' }), 30);
     }
     else if (t.dataset.work) { cs.sel = +t.dataset.work; cs.hover = null; if (mob()) setTimeout(() => $('ficha').scrollIntoView({ behavior: 'smooth' }), 30); }
-    else if (t.dataset.pick) { cs.sel = +t.dataset.pick; cs.hover = null; stopAt = placeOf(cs.sel); }
+    else if (t.dataset.pick) { cs.sel = +t.dataset.pick; cs.hover = null; stopAt = groupOf(cs.sel).key; }
     else if (t.dataset.try) { tryOn(+t.dataset.try); return; }
-    else if (t.dataset.zoom) { stopAt = placeOf(+t.dataset.zoom); openLb(+t.dataset.zoom); return; }
+    else if (t.dataset.zoom) { stopAt = groupOf(+t.dataset.zoom).key; openLb(+t.dataset.zoom); return; }
     renderC();
   });
   $('v-catalogo').addEventListener('mouseover', (e) => {
@@ -781,8 +788,8 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
   setInterval(() => {
     if (cs.view !== 'map' || mob() || inFicha || lbI !== null || document.hidden || $('v-catalogo').hidden) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const i = shownC(), pl = placeOf(i);
-    if (stopAt) { if (stopAt === pl) return; stopAt = null; }
+    const i = shownC(), pl = groupOf(i);
+    if (stopAt) { if (stopAt === pl.key) return; stopAt = null; }
     const ids = pl.ids.filter((k) => match(W[k])); if (ids.length < 2) return;
     const nx = ids[(ids.indexOf(i) + 1) % ids.length];
     if (cs.hover !== null) cs.hover = nx; else cs.sel = nx;
