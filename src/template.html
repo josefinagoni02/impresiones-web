@@ -203,7 +203,7 @@ nav.main a[aria-current="page"]{color:var(--ink);box-shadow:inset 0 -1.5px 0 var
 .stage{position:relative;min-width:0;background:radial-gradient(ellipse 46% 60% at 50% 42%,rgba(255,248,232,.95) 0%,rgba(255,248,232,0) 72%),var(--wall);overflow:hidden}
 .stage .head{position:absolute;left:36px;top:28px;display:flex;flex-direction:column;gap:6px;max-width:60%;z-index:2}
 .stage .head h1{margin:0;font-family:var(--display);font-weight:400;font-style:italic;font-size:56px;line-height:.95;letter-spacing:-.02em}
-.wallarea{position:absolute;left:0;right:0;top:120px;bottom:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.wallarea{position:absolute;left:0;right:0;top:110px;bottom:172px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
 .ruler{display:flex;flex-direction:column;align-items:center;gap:6px;color:#5d564c;transition:width .5s cubic-bezier(.2,.7,.2,1)}
 .ruler span{font-size:12px;letter-spacing:.08em}
 .ruler div{width:100%;height:8px;border-left:1px solid currentColor;border-right:1px solid currentColor;display:flex;align-items:center}
@@ -905,7 +905,12 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
     const iw = o.w - 2 * mold, ih = o.h - 2 * mold, vw = Math.min(o.pw, iw), vh = Math.min(o.ph, ih);
     const tot = ps.qty * ow + (ps.qty - 1) * gap;
     const wa = $('wallarea'); const aw = wa.clientWidth - (mob() ? 48 : 120); const ah = wa.clientHeight - (mob() ? 70 : 60);
-    const sc = Math.max(0.5, Math.min(4.6, aw / tot, ah / oh));
+    // escala: la medida más grande llena la pared; las más chicas se agrandan a mitad de camino (se siguen notando las diferencias)
+    const fitSc = (w, h) => Math.min(aw / (ps.qty * w + (ps.qty - 1) * gap), ah / h);
+    const scFill = fitSc(ow, oh);
+    const refs = optsList().filter((x) => x && x.w && x.h).map((x) => fitSc(x.w + dep, x.h + dep));
+    const scRef = refs.length ? Math.min(...refs) : scFill;
+    const sc = Math.max(0.5, Math.min(scFill, scRef + (scFill - scRef) * 0.4));
     const BW = vw * sc, BH = vh * sc, multi = ps.qty > 1;
     let h = ''; geom = [];
     for (let i = 0; i < ps.qty; i++) {
