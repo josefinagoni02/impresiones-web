@@ -36,6 +36,8 @@ LUGARES = {
     'bolson': (-41.9644, -71.5332, 'El Bolsón', 'Argentina'),
 }
 REGION_TXT = {'Estados Unidos': 'California, EE.UU.', 'Argentina': 'Buenos Aires, Argentina'}
+# nombre de la zona en el mapa cuando se agrupan lugares (si no está, se usa REGION)
+MAP_REGION = {'mar del plata': 'Mar Argentino', 'chapadmalal': 'Mar Argentino'}
 REGION = {'obelisco': 'Buenos Aires', 'capital federal': 'Buenos Aires', 'caba': 'Buenos Aires', 'golden gate': 'California', 'san francisco': 'California', 'tigre': 'Buenos Aires', 'tafí': 'Tucumán', 'tafi': 'Tucumán', 'jardín botánico': 'Buenos Aires', 'jardin botanico': 'Buenos Aires', 'mar del plata': 'Buenos Aires', 'chapadmalal': 'Buenos Aires', 'las criollas': 'Tucumán', 'bolsón': 'Patagonia', 'bolson': 'Patagonia'}
 # Precios de venta (opción B: 30% de margen sobre el precio, redondeado a $500). Medidas en vertical.
 PRECIOS = {
@@ -103,7 +105,7 @@ def main():
         works.append({
             'id': d['_id'], 't': (d.get('title') or 'Sin título').strip(), 'serie': (d.get('serie') or '').strip(),
             'year': d.get('year') or None, 'when': (d.get('when') or '').strip(),
-            'place': pretty, 'short': short, 'country': country, 'region': REGION.get(key, country), 'lat': lat, 'lon': lon, 'coords': f"{dms(lat, 'N', 'S')} {dms(lon, 'E', 'O')}",
+            'place': pretty, 'short': short, 'country': country, 'region': MAP_REGION.get(key, REGION.get(key, country)), 'lat': lat, 'lon': lon, 'coords': f"{dms(lat, 'N', 'S')} {dms(lon, 'E', 'O')}",
             'fmt': 'h' if ar > 1.05 else 'v' if ar < 0.95 else 'q', 'ar': round(ar, 4),
             'img': f"img/{m['file']}.jpg", 'sm': f"img/{m['file']}-sm.jpg", 'edge': m['avg'], 'edgeD': darker(m['avg']),
             'tones': tones, 'moods': d.get('mood') or [], 'text': (d.get('phrase') or '').strip(), 'story': (d.get('story') or '').strip(),

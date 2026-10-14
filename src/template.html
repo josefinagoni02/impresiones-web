@@ -175,13 +175,18 @@ nav.main a[aria-current="page"]{color:var(--ink);box-shadow:inset 0 -1.5px 0 var
 @media (max-width:1100px){#v-catalogo{grid-template-columns:230px minmax(0,1fr) 330px}.ficha h2{font-size:44px}}
 @media (max-width:900px){
   #v-catalogo{display:flex;flex-direction:column;height:auto;min-height:0}
-  .filters{border-right:0;border-bottom:1px solid var(--line);padding:24px 16px 16px;gap:14px}
-  .filters h1{font-size:48px}
+  .filters{border-right:0;border-bottom:1px solid var(--line);padding:18px 16px 14px;gap:12px}
+  .filters h1{font-size:40px}
+  .filters p{font-size:14px;line-height:1.45}
+  .chip.fbtn{display:inline-flex;align-self:flex-start}
+  .chip.fbtn[aria-expanded="true"]{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
+  .fpanel{display:none}
+  .fpanel.on{display:flex;flex-direction:column;gap:14px;padding-top:4px}
   .fgroup .row{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
   .fgroup .eyebrow{display:none}
   .count{margin-top:0}
   .center{height:auto}
-  .center.is-map{height:min(78vh,640px)}
+  .center.is-map{height:min(60vh,560px)}
   .viewtoggle{position:relative;right:auto;top:auto;margin:14px 16px 0;display:inline-flex}
   .center.is-map .map{top:66px}
   .grid{padding-top:16px!important}
@@ -750,7 +755,7 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
   }
   function setFilters(on) { $('fpanel').classList.toggle('on', on); $('fbtn').setAttribute('aria-expanded', on); }
   $('fbtn').onclick = () => setFilters(!$('fpanel').classList.contains('on'));
-  document.addEventListener('click', (e) => { if ($('fpanel').classList.contains('on') && !e.target.closest('#fpanel,#fbtn')) setFilters(false); });
+  document.addEventListener('click', (e) => { if (!$('fpanel').classList.contains('on')) return; const path = e.composedPath(); if (!path.includes($('fpanel')) && !path.includes($('fbtn'))) setFilters(false); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && $('fpanel').classList.contains('on')) { setFilters(false); $('fbtn').focus(); } });
   $('vMap').onclick = () => setView('map');
   $('vGrid').onclick = () => setView('grid');
@@ -778,6 +783,13 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
     const t = e.target.closest('[data-cl],[data-work]'); if (!t) return;
     const v = t.dataset.cl ? (lastClusters[+t.dataset.cl] || { hits: [cs.sel] }).hits[0] : +t.dataset.work;
     if (cs.hover !== v) { cs.hover = v; renderFicha(); if (cs.view === 'map') renderPins(); else renderGrid(); }
+  });
+  $('ficha').addEventListener('mouseover', (e) => {
+    if (mob()) return;
+    const t = e.target.closest('[data-pick]'); if (!t) return;
+    const k = +t.dataset.pick; if (k === shownC()) return;
+    cs.sel = k; cs.hover = null; stopAt = groupOf(k).key; renderFicha(true);
+    if (cs.view === 'map') renderPins(); else renderGrid();
   });
   $('center').addEventListener('mouseleave', () => { if (cs.hover !== null) { if (cs.view === 'map') cs.sel = cs.hover; cs.hover = null; renderC(); } });
 
