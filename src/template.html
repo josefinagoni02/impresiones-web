@@ -519,7 +519,7 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
   const SERIES = ['Todas'].concat([...new Set(W.map((w) => w.serie).filter(Boolean))]);
   const START = Math.max(0, W.findIndex((w) => /^ciudad embl/i.test(w.t))); // obra que se ve primero
   const cs = { view: 'map', sel: START, hover: null, serie: 0, tone: 0, q: '' };
-  let stopAt = null; // lugar donde el visitante frenó el pase automático
+  let stopAt = 'inicio'; // lugar donde el visitante frenó el pase automático; al entrar, la obra inicial queda fija hasta que el visitante toque algo
   const places = [];
   W.forEach((w, i) => { let p = places.find((x) => x.short === w.short && x.country === w.country); if (!p) { p = { short: w.short, country: w.country, region: w.region || w.country, lat: w.lat, lon: w.lon, ids: [] }; places.push(p); } p.ids.push(i); });
   const countries = [...new Set(places.map((p) => p.country))];
@@ -834,6 +834,7 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
     if (cs.view !== 'map' || mob() || inFicha || lbI !== null || document.hidden || $('v-catalogo').hidden) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const i = shownC(), pl = groupOf(i);
+    if (stopAt === 'inicio') return;
     if (stopAt) { if (stopAt === pl.key) return; stopAt = null; }
     const ids = pl.ids.filter((k) => match(W[k])); if (ids.length < 2) return;
     const nx = ids[(ids.indexOf(i) + 1) % ids.length];

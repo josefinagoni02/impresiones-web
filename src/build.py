@@ -91,6 +91,8 @@ def main():
         m = meta.get(fn)
         if not m:
             warn.append(f"sin foto procesada: {d.get('title')} ({fn})"); continue
+        if d.get('photoId') and m.get('photoId') and d['photoId'] != m['photoId']:
+            warn.append(f"FOTO CAMBIADA en la ficha (bajar asset {d['photoId']} y reprocesar): {d.get('title')} ({fn})")
         place = (d.get('place') or '').strip()
         key = next((k for k in LUGARES if k in place.lower()), None)
         if not key:
@@ -98,6 +100,7 @@ def main():
         lat, lon, short, country = LUGARES[key]
         reg = REGION.get(key, country)
         pretty = ", ".join([short] + ([reg] if reg != country else []) + ["EE.UU." if country == "Estados Unidos" else country])
+        ver = f"?v={m['photoId'][:8]}" if m.get('photoId') else ''
         tones = [t for t in [d.get('tone')] if t]
         if 'magenta' in (d.get('notes') or '').lower() and 'magenta' not in tones:
             tones.append('magenta')
@@ -107,7 +110,7 @@ def main():
             'year': d.get('year') or None, 'when': (d.get('when') or '').strip(),
             'place': pretty, 'short': short, 'country': country, 'region': MAP_REGION.get(key, REGION.get(key, country)), 'lat': lat, 'lon': lon, 'coords': f"{dms(lat, 'N', 'S')} {dms(lon, 'E', 'O')}",
             'fmt': 'h' if ar > 1.05 else 'v' if ar < 0.95 else 'q', 'ar': round(ar, 4),
-            'img': f"img/{m['file']}.jpg", 'sm': f"img/{m['file']}-sm.jpg", 'edge': m['avg'], 'edgeD': darker(m['avg']),
+            'img': f"img/{m['file']}.jpg{ver}", 'sm': f"img/{m['file']}-sm.jpg{ver}", 'edge': m['avg'], 'edgeD': darker(m['avg']),
             'tones': tones, 'moods': d.get('mood') or [], 'text': (d.get('phrase') or '').strip(), 'story': (d.get('story') or '').strip(),
             'notes': d.get('notes') or '',
         })

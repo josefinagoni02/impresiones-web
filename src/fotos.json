@@ -117,30 +117,35 @@
   "file": "img-7475",
   "w": 6000,
   "h": 4000,
-  "avg": "#221a13"
+  "avg": "#221a13",
+  "photoId": "de3c4c8bc37270e967f9ef94f177394d"
  },
  "IMG_5943.jpg": {
   "file": "img-5943",
   "w": 6000,
   "h": 4000,
-  "avg": "#9d979a"
+  "avg": "#9d979a",
+  "photoId": "7af151fc391edd55fae1ca12d62ce119"
  },
  "IMG_6087.jpg": {
   "file": "img-6087",
   "w": 5611,
   "h": 3741,
-  "avg": "#91969f"
+  "avg": "#bab0a0",
+  "photoId": "b141b733681ff494790c590c7871cfe7"
  },
  "IMG_0147.jpg": {
   "file": "img-0147",
   "w": 5547,
   "h": 3698,
-  "avg": "#7f7a74"
+  "avg": "#7f7a74",
+  "photoId": "c4f28e92c3b463c03bf4ad97ac8eeed1"
  },
  "IMG_8360.jpg": {
   "file": "img-8360",
   "w": 4000,
   "h": 6000,
-  "avg": "#8f9488"
+  "avg": "#8f9488",
+  "photoId": "f8c31240c92ce5957bf332e34abf42ff"
  }
 }
