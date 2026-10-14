@@ -39,7 +39,7 @@ REGION_TXT = {'Estados Unidos': 'California, EE.UU.', 'Argentina': 'Buenos Aires
 # nombre de la zona en el mapa cuando se agrupan lugares (si no está, se usa REGION)
 MAP_REGION = {'mar del plata': 'Mar Argentino', 'chapadmalal': 'Mar Argentino'}
 REGION = {'obelisco': 'Buenos Aires', 'capital federal': 'Buenos Aires', 'caba': 'Buenos Aires', 'golden gate': 'California', 'san francisco': 'California', 'tigre': 'Buenos Aires', 'tafí': 'Tucumán', 'tafi': 'Tucumán', 'jardín botánico': 'Buenos Aires', 'jardin botanico': 'Buenos Aires', 'mar del plata': 'Buenos Aires', 'chapadmalal': 'Buenos Aires', 'las criollas': 'Tucumán', 'bolsón': 'Patagonia', 'bolson': 'Patagonia'}
-# Precios de venta (opción B: 30% de margen sobre el precio, redondeado a $500). Medidas en vertical.
+# Precios de venta publicados (redondeados a $500). Medidas en vertical.
 PRECIOS = {
     'print': [dict(w=20, h=30, pw=20, ph=30, p=15500), dict(w=30, h=40, pw=30, ph=40, p=31000), dict(w=40, h=60, pw=40, ph=60, p=62000)],
     'marco': [dict(w=30, h=40, pw=30, ph=40, p=50000), dict(w=40, h=60, pw=40, ph=60, p=100500)],
