@@ -148,7 +148,7 @@ nav.main a[aria-current="page"]{color:var(--ink);box-shadow:inset 0 -1.5px 0 var
 .stage{position:relative;min-width:0;background:radial-gradient(ellipse 46% 60% at 50% 42%,rgba(255,248,232,.95) 0%,rgba(255,248,232,0) 72%),var(--wall);overflow:hidden}
 .stage .head{position:absolute;left:36px;top:28px;display:flex;flex-direction:column;gap:6px;max-width:60%;z-index:2}
 .stage .head h1{margin:0;font-family:var(--display);font-weight:400;font-style:italic;font-size:56px;line-height:.95;letter-spacing:-.02em}
-.wallarea{position:absolute;left:0;right:0;top:130px;bottom:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.wallarea{position:absolute;left:0;right:0;top:120px;bottom:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
 .ruler{display:flex;flex-direction:column;align-items:center;gap:6px;color:#5d564c;transition:width .5s cubic-bezier(.2,.7,.2,1)}
 .ruler span{font-size:12px;letter-spacing:.08em}
 .ruler div{width:100%;height:8px;border-left:1px solid currentColor;border-right:1px solid currentColor;display:flex;align-items:center}
@@ -162,7 +162,7 @@ nav.main a[aria-current="page"]{color:var(--ink);box-shadow:inset 0 -1.5px 0 var
 .piece .bx img{position:absolute;left:50%;top:50%;max-width:none;transition:all .5s cubic-bezier(.2,.7,.2,1)}
 .piece .pl{font-size:12px;letter-spacing:.06em;color:#8a8175}
 .piece.act .pl{color:var(--ink);font-weight:500}
-.dock{position:absolute;left:20px;right:20px;bottom:24px;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;z-index:4}
+.dock{position:absolute;left:20px;right:20px;bottom:84px;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;z-index:4}
 .dgroup{display:flex;flex-direction:column;gap:6px}
 .dgroup .eyebrow{padding:0 14px}
 .dgroup.right{align-items:flex-end}
@@ -184,7 +184,7 @@ nav.main a[aria-current="page"]{color:var(--ink);box-shadow:inset 0 -1.5px 0 var
 .qty button{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center}
 .qty button:disabled{opacity:.3;cursor:default}
 .qty .qn{min-width:28px;text-align:center;font-size:15px;font-weight:500;line-height:1;font-variant-numeric:tabular-nums}
-.tray{position:absolute;left:50%;bottom:112px;transform:translateX(-50%);padding:16px 18px;border-radius:18px;display:flex;flex-direction:column;gap:12px;z-index:5;max-width:calc(100% - 32px)}
+.tray{position:absolute;left:50%;bottom:172px;transform:translateX(-50%);padding:16px 18px;border-radius:18px;display:flex;flex-direction:column;gap:12px;z-index:5;max-width:calc(100% - 32px)}
 .tray .opts{display:flex;gap:6px;flex-wrap:wrap}
 .opt{width:72px;padding:4px 0;display:flex;flex-direction:column;align-items:center;gap:8px;font-size:12px;color:#4a443c;position:relative}
 .opt .s{width:34px;height:34px;border-radius:50%;border:1px solid rgba(0,0,0,.15);transition:box-shadow .2s;display:flex;align-items:center;justify-content:center}
@@ -289,25 +289,54 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
 .opt .ask{font-size:10px;color:var(--muted);margin-top:-6px}
 .printline{font-size:12px;color:var(--muted);text-underline-offset:3px}
 .pill .seg2{padding:0 13px}
-/* impresión y precios */
-.info{padding:clamp(56px,8vw,112px) clamp(16px,3vw,48px);border-top:1px solid var(--line);display:flex;flex-direction:column;gap:40px;background:var(--card)}
-.info h2{margin:8px 0 0;font-family:var(--display);font-weight:400;font-size:clamp(40px,5.5vw,72px);line-height:.95;letter-spacing:-.02em;text-wrap:balance}
-.info h3{margin:0 0 10px;font-family:var(--display);font-weight:400;font-size:28px}
-.icols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:40px}
-.icols p{margin:0;font-size:15px;line-height:1.65;color:#3f3a33;max-width:46ch}
-.prices{display:flex;flex-direction:column;gap:18px;padding-top:28px;border-top:1px solid var(--line)}
-.phd{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 24px}
-.phd h3{margin:0}
-#priceRange{font-family:var(--mono);font-size:13px;color:var(--muted)}
-.ptable{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:28px}
-.pcol h4{margin:0;font-size:14px;font-weight:600}
-.pcol>small{display:block;font-size:12px;color:var(--muted);margin:2px 0 10px}
-.pcol ul{list-style:none;margin:0;padding:0}
-.pcol li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px;font-variant-numeric:tabular-nums}
-.pcol li small{color:var(--muted);font-size:11px}
-.pnote{margin:0;font-size:13px;color:var(--muted);max-width:80ch}
-@media (max-width:1000px){.ptable{grid-template-columns:repeat(2,minmax(0,1fr))}.icols{grid-template-columns:minmax(0,1fr)}}
-@media (max-width:520px){.ptable{grid-template-columns:minmax(0,1fr)}}
+/* impresión (muestras de material) */
+.info{padding:clamp(48px,6vw,88px) clamp(16px,3vw,48px);border-top:1px solid var(--line);display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:clamp(32px,5vw,72px);align-items:start}
+.ilead{display:flex;flex-direction:column;gap:12px}
+.ilead h2{margin:0;font-family:var(--display);font-weight:400;font-size:clamp(32px,3.4vw,42px);line-height:1.05;text-wrap:balance}
+.irange{font-family:var(--mono);font-size:13px;color:#6b5a45}
+.pnote{margin:4px 0 0;font-size:12px;line-height:1.55;color:var(--muted)}
+.smps{display:flex;gap:22px;align-items:flex-start}
+.smp{display:flex;gap:18px;align-items:flex-start;text-align:left;flex-grow:0;transition:flex-grow .5s cubic-bezier(.2,.7,.2,1)}
+.smp.on{flex-grow:1}
+.smp .sw{width:120px;height:150px;flex-shrink:0;border-radius:3px;box-shadow:0 8px 16px -10px rgba(40,30,20,.4);transition:transform .5s cubic-bezier(.2,.7,.2,1),box-shadow .5s}
+.smp.on .sw{transform:rotate(-3deg) translateY(-6px);box-shadow:0 18px 30px -14px rgba(40,30,20,.5)}
+.sw-papel{background:#f6f3ee;background-image:radial-gradient(rgba(120,100,70,.07) 1px,transparent 1.2px);background-size:5px 5px}
+.sw-lienzo{background:#e9e3d8;background-image:repeating-linear-gradient(0deg,rgba(110,90,60,.10) 0 1px,transparent 1px 4px),repeating-linear-gradient(90deg,rgba(110,90,60,.10) 0 1px,transparent 1px 4px)}
+.smp .sw-marco{background:#fbfaf6;box-shadow:inset 0 0 0 10px #1c1b1a,inset 0 0 0 24px #fbfaf6,inset 0 0 0 25px #d8d2c7,0 8px 16px -10px rgba(40,30,20,.4)}
+.smp .stx{display:flex;flex-direction:column;gap:6px;overflow:hidden;max-width:90px;opacity:.65;transition:max-width .5s cubic-bezier(.2,.7,.2,1),opacity .4s}
+.smp.on .stx{max-width:280px;opacity:1}
+.smp .stx>span{opacity:0;transition:opacity .35s}.smp.on .stx>span{opacity:1;transition-delay:.15s}
+.smp .stx small{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.smp .stx b{font-family:var(--display);font-weight:400;font-size:28px;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.smp .stx>span{width:260px;font-size:13px;line-height:1.55;color:#4a443c}
+@media (max-width:1100px){.info{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:760px){.smps{flex-direction:column}.smp,.smp.on{flex-grow:0}.smp .stx,.smp.on .stx{max-width:none;opacity:1}.smp .stx>span{width:auto;opacity:1}.smp .sw{width:90px;height:112px}}
+/* ticket y pedido */
+.tkbar{position:absolute;left:48px;right:48px;bottom:0;height:60px;z-index:4;display:flex;align-items:center;gap:16px;padding:0 24px;border-radius:16px 16px 0 0;background:rgba(251,250,246,.96);box-shadow:0 -14px 32px -22px rgba(40,30,20,.5);text-decoration:none;color:var(--ink)}
+.tkbar .k{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);white-space:nowrap}
+.tkbar .its{display:flex;gap:6px;min-width:0;overflow:hidden}
+.tkbar .its span{height:26px;padding:0 10px;border-radius:99px;background:var(--soft);font-size:12px;display:flex;align-items:center;white-space:nowrap}
+.tkbar .sp{flex-grow:1}
+.tkbar .tot{font-family:var(--display);font-size:28px;line-height:1;white-space:nowrap}
+.tkbar .go{font-size:13px;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.tkbar .go svg{transition:transform .3s}.tkbar:hover .go svg{transform:translateY(2px)}
+.piece .pl{padding:5px 10px;background:rgba(251,250,246,.9);box-shadow:0 6px 14px -10px rgba(40,30,20,.5);font-family:var(--display);font-style:italic;font-size:15px;letter-spacing:0;color:var(--ink);opacity:.8}
+.piece .pl small{font-family:var(--mono);font-style:normal;font-size:9px;letter-spacing:.08em;color:var(--faint);margin-right:6px}
+.pedido{padding:clamp(36px,4vw,56px) clamp(16px,3vw,48px) clamp(44px,5vw,64px);background:var(--card);border-top:1px solid var(--line);display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:clamp(28px,4vw,56px)}
+.pedido .ph{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding-bottom:12px;border-bottom:1px solid var(--ink)}
+.pedido .ph h2{margin:0;font-family:var(--display);font-weight:400;font-size:44px;line-height:1}
+.pedido .ph a{font-size:12px;color:var(--muted)}
+.orow{display:grid;grid-template-columns:72px minmax(0,1fr) auto;gap:18px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
+.orow .mini{width:72px;height:80px;display:flex;align-items:center;justify-content:center}
+.orow .nm{font-family:var(--display);font-size:24px;line-height:1}
+.orow .nm small{font-family:var(--mono);font-size:10px;color:var(--faint);margin-right:8px}
+.orow .sp{font-size:12px;color:var(--muted);margin-top:4px}
+.orow .pr{font-size:15px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.osum{display:flex;flex-direction:column;gap:12px;padding-top:8px}
+.osum .tl{font-size:12px;color:var(--faint)}
+.osum .big{font-family:var(--display);font-size:52px;line-height:1}
+.osum .nt{font-size:12px;line-height:1.5;color:var(--muted)}
+@media (max-width:900px){.tkbar{position:sticky;bottom:0;left:auto;right:auto;margin:0 12px;border-radius:14px 14px 0 0}.tkbar .its{display:none}.pedido{grid-template-columns:minmax(0,1fr)}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -369,31 +398,31 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
         </div>
       </div>
     </div>
+    <a class="tkbar" id="tkbar" href="#pedido" aria-label="Ver tu pedido"></a>
   </div>
   <aside class="pside">
     <div class="tabs" role="tablist"><button role="tab" id="tObras" aria-selected="true">Obras</button><button role="tab" id="tSets" aria-selected="false">Sets armados</button></div>
     <p class="phelp" id="phelp"></p>
     <div class="plist" id="plist"></div>
-    <div class="pfoot"><div class="quote" id="quote"></div><a class="btn" id="consult" href="#contacto" target="_blank" rel="noopener">Consultar por esta composición <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
   </aside>
 </main>
+<section class="pedido" id="pedido" hidden aria-label="Tu pedido"></section>
 
-<section class="info" id="impresion">
-  <div class="ihead"><span class="eyebrow">Impresión y materiales</span><h2>Cada obra se imprime a pedido</h2></div>
-  <div class="icols">
-    <div><h3>Papel</h3><p>Cada obra se imprime a pedido en Hahnemühle Photo Rag Baryta, un papel de 100% algodón de la fábrica alemana Hahnemühle. Tiene un acabado satinado, casi liso, y negros profundos, con el aspecto de una copia de laboratorio clásica. Es un papel de archivo, libre de ácido: lejos del sol directo y la humedad, conserva el color durante décadas.</p></div>
-    <div><h3>Canvas</h3><p>Lienzo de poliéster de 260 g, impreso con tecnología Fine Art de 11 colores y montado sobre bastidor de pintor de 2 × 2 cm. Se entrega embalado para su traslado.</p></div>
-    <div><h3>Marcos y paspartú</h3><p>Marcos en negro, blanco o madera; otros colores, a consultar. La medida indicada es la del marco completo. El paspartú es blanco, con un borde de 5 o 10 cm según la medida.</p></div>
-  </div>
-  <div class="prices">
-    <div class="phd"><h3>Precios estimados</h3><span id="priceRange"></span></div>
-    <div class="ptable" id="priceTable"></div>
-    <p class="pnote">Precios estimados por obra, sujetos a confirmación. <b>El envío no está incluido</b> y se coordina aparte según el destino. Medidas cuadradas u otras medidas, paspartú negro y colores de marco especiales: consultá disponibilidad.</p>
-  </div>
-</section>
 <section class="about" id="sobre">
   <div><h2>Sobre mí</h2><p id="bio"></p></div>
   <div class="contact" id="contacto"></div>
+</section>
+<section class="info" id="impresion">
+  <div class="ilead">
+    <h2>Impresiones Fine Art, a pedido</h2>
+    <span class="irange" id="priceRange"></span>
+    <p class="pnote">Precios estimados por obra, sujetos a confirmación. El envío no está incluido y se coordina aparte según el destino. Consultá por medidas y personalización adicional.</p>
+  </div>
+  <div class="smps" id="smps">
+    <button class="smp on" data-smp="0"><span class="sw sw-papel"></span><span class="stx"><small>Impresión</small><b>Papel de arte</b><span>Hahnemühle Photo Rag Baryta, un papel de 100% algodón de la fábrica alemana Hahnemühle. Acabado satinado, casi liso, con negros profundos y el aspecto de una copia de laboratorio clásica. Es un papel de archivo, libre de ácido: lejos del sol directo y la humedad, conserva el color durante décadas.</span></span></button>
+    <button class="smp" data-smp="1"><span class="sw sw-lienzo"></span><span class="stx"><small>Lienzo</small><b>Canvas</b><span>Lienzo de poliéster de 260 g, impreso con tecnología Fine Art de 11 colores y montado sobre bastidor de pintor de 2 × 2 cm. Se entrega embalado para su traslado.</span></span></button>
+    <button class="smp" data-smp="2"><span class="sw sw-marco"></span><span class="stx"><small>Marco y paspartú</small><b>Enmarcados</b><span>Marcos en negro, blanco o madera, y otros colores a pedido. La medida indicada es la del marco completo. Con o sin paspartú blanco.</span></span></button>
+  </div>
 </section>
 <footer class="bottom"><span id="foot"></span><span>Impresiones fotográficas · marco o canvas</span></footer>
 
@@ -419,6 +448,7 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
     if (!r) return;
     $('v-catalogo').hidden = r !== 'catalogo';
     $('v-probador').hidden = r !== 'probador';
+    $('pedido').hidden = r !== 'probador';
     document.querySelectorAll('nav.main a[data-route]').forEach((a) => a.setAttribute('aria-current', a.dataset.route === r ? 'page' : 'false'));
     if (r === 'probador') renderP();
     window.scrollTo(0, 0);
@@ -754,7 +784,7 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
       h += `<button class="piece${multi && i === ps.active ? ' act' : ''}" data-slot="${i}" aria-label="Lugar ${i + 1}: ${esc(w.t)}">
         <div class="ring"><div class="fr" style="${frSt}"><div class="mt" style="${mtSt}">
         <div class="bx ld${pan ? ' pan' : ''}" data-bx="${i}" style="width:${BW}px;height:${BH}px"><img src="${w.img}" alt="" draggable="false" style="width:${ew}px;height:${eh}px;transform:${imgTf(i, ox, oy, r)}"></div></div></div></div>
-        ${multi ? `<span class="pl">${i + 1} · ${esc(w.t)}</span>` : ''}</button>`;
+        <span class="pl">${multi ? `<small>${String(i + 1).padStart(2, '0')}</small>` : ''}${esc(w.t)}</span></button>`;
     }
     $('comp').innerHTML = h;
     $('comp').style.gap = gap * sc + 'px';
@@ -802,10 +832,10 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
       h = `<div class="opts">${EDGES.map((e) => `<button class="opt" data-a="edge" data-v="${e.id}" aria-pressed="${e.id === ps.edge}"><span class="s sq" style="background:${e.id === 'wrap' ? `url(${cur.sm}) center/cover` : e.c}"></span>${e.label}</button>`).join('')}</div>`;
     } else if (ps.open === 'format') {
       const l = optsList();
-      const hint = ps.finish === 'marco' ? 'Medida total del marco' + (withMat() ? ' (la foto va adentro, con borde blanco)' : '') : ps.finish === 'canvas' ? 'Medida del canvas' : 'Medida de la impresión';
+      const hint = ps.finish === 'marco' ? 'Medida total del marco' : ps.finish === 'canvas' ? 'Medida del canvas' : 'Medida de la impresión';
       h = `<div class="opts">${ORIENTS.map((o) => `<button class="chip" data-a="orient" data-v="${o.id}" aria-pressed="${o.id === ps.orient}"><span style="width:${o.icon[0]}px;height:${o.icon[1]}px;border:1.5px solid currentColor;border-radius:2px"></span>${o.label}</button>`).join('')}</div>
         <span class="hint">${hint}</span>
-        <div class="opts">${l.map((o, i) => `<button class="szchip" data-a="size" data-v="${i}" aria-pressed="${!ps.other && i === Math.min(ps.size, l.length - 1)}"><b>${o.w}×${o.h}</b><small>${o.p ? money(o.p) : 'a consultar'}${withMat() && o.pw !== o.w ? ` · foto ${o.pw}×${o.ph}` : ''}</small></button>`).join('')}
+        <div class="opts">${l.map((o, i) => `<button class="szchip" data-a="size" data-v="${i}" aria-pressed="${!ps.other && i === Math.min(ps.size, l.length - 1)}"><b>${o.w}×${o.h}</b>${o.p ? '' : '<small>a consultar</small>'}</button>`).join('')}
         <button class="szchip" data-a="other" aria-pressed="${ps.other}"><b>Otra medida</b><small>a consultar</small></button></div>`;
     } else if (ps.open === 'img') {
       const multi = ps.qty > 1, k = multi ? ps.active : 0, cr = ps.rot[k], g = geom[k] || { ox: 0, oy: 0 };
@@ -827,46 +857,47 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
     const cc = $('customColor'); if (cc) cc.addEventListener('input', (e) => { ps.custom = e.target.value; ps.frame = 'custom'; ps.set = null; renderPieces(); renderDock(); renderQuote(); });
   }
 
-  /* ---------- tarjeta "Tu cuadro": esquema a escala + precio ---------- */
+  /* ---------- pedido: ticket en la pared + sección completa abajo ---------- */
   function specText() {
     const o = curOpt(), fr = frameOf(), mt = matOf(), ed = EDGES.find((e) => e.id === ps.edge);
-    const size = ps.other ? 'otra medida' : `${o.w}×${o.h} cm`;
-    if (ps.finish === 'print') return `Impresión sin montaje · ${size}`;
-    if (ps.finish === 'canvas') return `Canvas · ${size} · borde ${ed.label.toLowerCase()}`;
-    return `Marco ${fr.label.toLowerCase()} ${size}` + (withMat() ? ` · paspartú ${mt.label.toLowerCase()}${ps.other ? '' : ` ${o.mat} cm · foto ${o.pw}×${o.ph}`}` : ' · sin paspartú');
+    const size = ps.other ? 'medida a consultar' : `${o.w}×${o.h}`;
+    if (ps.finish === 'print') return `Impresión sin montaje ${size}`;
+    if (ps.finish === 'canvas') return `Canvas ${size} · borde ${ed.label.toLowerCase()}`;
+    return `Marco ${fr.label.toLowerCase()} ${size}` + (withMat() ? ` · paspartú ${mt.label.toLowerCase()}${ps.other ? '' : ` ${o.w}×${o.h} · foto ${o.pw}×${o.ph}`}` : ' · sin paspartú');
+  }
+  function miniFrame(w) {
+    const o = curOpt(), isM = ps.finish === 'marco', isC = ps.finish === 'canvas', k = 70 / Math.max(o.w, o.h, 1);
+    const fr = frameOf(), mt = matOf();
+    const vw = Math.min(o.pw, o.w - (isM ? 4 : 0)), vh = Math.min(o.ph, o.h - (isM ? 4 : 0));
+    const outer = isM ? `background:${fr.bg}` : isC ? 'background:#3a3631' : 'background:transparent';
+    return `<div style="width:${o.w * k}px;height:${o.h * k}px;${outer};display:flex;align-items:center;justify-content:center;box-shadow:0 6px 12px -6px rgba(40,30,20,.45)"><div style="width:${(o.w - (isM ? 4 : 0)) * k}px;height:${(o.h - (isM ? 4 : 0)) * k}px;background:${withMat() ? mt.c : 'transparent'};display:flex;align-items:center;justify-content:center"><div style="width:${vw * k}px;height:${vh * k}px;background:url(${w.sm}) center/cover"></div></div></div>`;
   }
   function renderQuote() {
-    const o = curOpt(), w = W[ps.slots[ps.active]] || W[0];
-    const isM = ps.finish === 'marco', isC = ps.finish === 'canvas';
-    const mold = isM ? MOLD : 0, ow = o.w, oh = o.h;
-    const vw = Math.min(o.pw, o.w - 2 * mold), vh = Math.min(o.ph, o.h - 2 * mold);
-    const k = 74 / Math.max(ow, oh), px = (v) => (v * k).toFixed(2);
-    const fr = frameOf(), mt = matOf();
-    const fill = isM ? (fr.id === 'madera' ? '#b38b5a' : fr.bg) : isC ? '#3a3631' : 'none';
-    const mx = (ow - vw) / 2, my = (oh - vh) / 2;
-    const svg = `<svg viewBox="0 0 ${px(ow)} ${px(oh)}" width="${px(ow)}" height="${px(oh)}" aria-hidden="true">
-      ${isM || isC ? `<rect x="0" y="0" width="${px(ow)}" height="${px(oh)}" fill="${fill}"/>` : ''}
-      ${isM ? `<rect x="${px(mold)}" y="${px(mold)}" width="${px(o.w - 2 * mold)}" height="${px(o.h - 2 * mold)}" fill="${withMat() ? mt.c : '#ddd'}"/>` : ''}
-      <defs><clipPath id="qclip"><rect x="${px(mx)}" y="${px(my)}" width="${px(vw)}" height="${px(vh)}"/></clipPath></defs>
-      <image href="${w.sm}" x="${px(mx)}" y="${px(my)}" width="${px(vw)}" height="${px(vh)}" preserveAspectRatio="xMidYMid slice" clip-path="url(#qclip)"/>
-      ${!isM && !isC ? `<rect x="${px(mx)}" y="${px(my)}" width="${px(vw)}" height="${px(vh)}" fill="none" stroke="#cfc6b8" stroke-width=".6"/>` : ''}
-    </svg>`;
-    const dims = [];
-    if (isM) { dims.push(['Marco', ps.other ? 'a medida' : `${o.w}×${o.h} cm`]); if (withMat() && !ps.other) { dims.push(['Borde', `${o.mat} cm por lado`]); dims.push(['Foto', `${o.pw}×${o.ph} cm`]); } }
-    else dims.push([isC ? 'Canvas' : 'Impresión', ps.other ? 'a medida' : `${o.w}×${o.h} cm`]);
-    const reason = askReason();
-    const each = reason ? null : o.p;
-    const price = each ? `<b class="qp">${money(each)}</b>${ps.qty > 1 ? `<small> c/u · total ${money(each * ps.qty)}</small>` : ''}` : '<b class="qp qask">A consultar</b>';
-    const note = [reason, ps.frame === 'custom' && isM ? 'Color de marco a medida: consultá disponibilidad.' : ''].filter(Boolean).join(' ');
-    const mat = isC ? 'Lienzo 260 g · tintas Fine Art · bastidor 2×2 cm' : 'Hahnemühle Photo Rag Baryta · 100% algodón';
-    $('quote').innerHTML = `<div class="qd">${svg}</div>
-      <div class="qt"><span class="eyebrow">Tu cuadro${ps.qty > 1 ? ` · ${ps.qty} piezas` : ''}</span>
-        <dl>${dims.map(([a, b]) => `<dt>${a}</dt><dd>${b}</dd>`).join('')}</dl>
-        <div class="qprice">${price}</div>
-        <small class="qnote">${note ? esc(note) + ' ' : ''}Precio estimado · envío aparte · <a href="#impresion">${esc(mat)}</a></small></div>`;
-    const names = ps.slots.slice(0, ps.qty).map((k2) => W[k2].t);
-    $('consult').href = consultLink(`${ps.qty > 1 ? NAMES[ps.qty] + ': ' : ''}${names.join(' + ')} — ${specText()}${each ? ` — precio estimado ${money(each)}${ps.qty > 1 ? ' c/u' : ''}` : ''}`);
+    const o = curOpt(), reason = askReason(), each = reason ? null : o.p;
+    const items = ps.slots.slice(0, ps.qty).map((i) => W[i]);
+    const tot = each ? money(each * ps.qty) : 'A consultar';
+    const down = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+    $('tkbar').innerHTML = `<span class="k">Tu pedido</span><span class="its">${items.map((w) => `<span>${esc(w.t)}</span>`).join('')}</span><span class="sp"></span><span class="tot">${tot}</span><span class="go">Ver pedido ${down}</span>`;
+    const note = [reason, ps.frame === 'custom' && ps.finish === 'marco' ? 'Color de marco a medida: consultá disponibilidad.' : ''].filter(Boolean).join(' ');
+    const mat = ps.finish === 'canvas' ? 'Lienzo de 260 g · tintas Fine Art · bastidor 2×2 cm.' : 'Impresión Fine Art en papel Hahnemühle de algodón.';
+    const link = consultLink(`${ps.qty > 1 ? NAMES[ps.qty] + ': ' : ''}${items.map((w) => w.t).join(' + ')} — ${specText()}${each ? ` — precio estimado ${money(each)}${ps.qty > 1 ? ' c/u' : ''}` : ''}`);
+    $('pedido').innerHTML = `<div><div class="ph"><h2>Tu pedido</h2><a href="#probador" data-up="1">↑ Volver a la pared</a></div>
+      ${items.map((w, i) => `<div class="orow"><div class="mini">${miniFrame(w)}</div><div><div class="nm"><small>${String(i + 1).padStart(2, '0')}</small>${esc(w.t)}</div><div class="sp">${esc(specText())}</div></div><span class="pr">${each ? money(each) : 'a consultar'}</span></div>`).join('')}</div>
+      <div class="osum"><span class="tl">Total estimado · ${ps.qty} ${ps.qty === 1 ? 'obra' : 'obras'}</span><span class="big">${tot}</span>
+      <span class="nt">${note ? esc(note) + ' ' : ''}Precio estimado, sujeto a confirmación. El envío no está incluido y se coordina aparte. ${mat}</span>
+      <a class="btn solid" href="${esc(link)}" target="_blank" rel="noopener">Consultar por WhatsApp →</a></div>`;
   }
+  /* desplazamiento lento hasta el pedido (o de vuelta a la pared) */
+  function slowScroll(toY, ms = 1300) {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { window.scrollTo(0, toY); return; }
+    const y0 = window.scrollY, t0 = performance.now();
+    const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+    const step = (now) => { const k = Math.min(1, (now - t0) / ms); window.scrollTo(0, y0 + (toY - y0) * ease(k)); if (k < 1) requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+  }
+  const hdrH = () => document.querySelector('header.top').getBoundingClientRect().height;
+  $('tkbar').addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); slowScroll($('pedido').getBoundingClientRect().top + window.scrollY - hdrH()); });
+  $('pedido').addEventListener('click', (e) => { if (e.target.closest('[data-up]')) { e.preventDefault(); slowScroll(0, 1000); } });
 
   function renderList() {
     const multi = ps.qty > 1;
@@ -951,16 +982,13 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
 
   /* ================= IMPRESIÓN Y PRECIOS ================= */
   function renderPrices() {
-    const rows = [
-      ['Sin montaje', 'Solo la impresión, en la medida indicada', PR.print.map((o) => [`${o.w}×${o.h}`, o.p])],
-      ['Con marco', 'Sin paspartú · medida total del marco', PR.marco.map((o) => [`${o.w}×${o.h}`, o.p])],
-      ['Con marco y paspartú', 'Borde blanco · medida del marco (foto)', PR.marco_mat.map((o) => [`${o.w}×${o.h} <small>(foto ${o.pw}×${o.ph})</small>`, o.p])],
-      ['Canvas', 'Sobre bastidor de 2×2 cm', PR.canvas.map((o) => [`${o.w}×${o.h}`, o.p])]
-    ];
-    const all = rows.flatMap((r) => r[2].map((x) => x[1]));
-    $('priceRange').textContent = `Desde ${money(Math.min(...all))} hasta ${money(Math.max(...all))} por obra`;
-    $('priceTable').innerHTML = rows.map(([t, sub, items]) => `<div class="pcol"><h4>${t}</h4><small>${sub}</small><ul>${items.map(([s, p]) => `<li><span>${s}</span><span>${money(p)}</span></li>`).join('')}</ul></div>`).join('');
+    const all = ['print', 'marco', 'marco_mat', 'canvas'].flatMap((k) => PR[k].map((o) => o.p));
+    $('priceRange').textContent = `desde ${money(Math.min(...all))} hasta ${money(Math.max(...all))} por obra`;
+    const smps = [...document.querySelectorAll('.smp')];
+    const pick = (b) => smps.forEach((x) => x.classList.toggle('on', x === b));
+    smps.forEach((b) => { b.addEventListener('mouseenter', () => pick(b)); b.addEventListener('click', () => pick(b)); b.addEventListener('focus', () => pick(b)); });
   }
+
 
   /* ================= CONTACTO ================= */
   function consultLink(what) {
