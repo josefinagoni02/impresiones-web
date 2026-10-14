@@ -937,8 +937,8 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
     }
     $('comp').innerHTML = h;
     $('comp').style.gap = gap * sc + 'px';
-    $('ruler').style.width = tot * sc + 'px';
-    $('rulerLbl').textContent = `${Math.round(tot)} cm de ancho total`;
+    $('ruler').style.width = (tot - dep) * sc + 'px'; $('ruler').style.transform = dep ? `translateX(${-dep * sc / 2}px)` : '';
+    $('rulerLbl').textContent = `${Math.round(ps.qty * o.w + (ps.qty - 1) * gap)} cm de ancho total`; // el canto del canvas es solo el efecto 3D, no suma ancho
     const names = ps.slots.slice(0, ps.qty).map((k) => W[k].t);
     $('pMeta').textContent = multi ? names.join(' · ') : [W[shownP(0)].serie, W[shownP(0)].place.split(',')[0]].filter(Boolean).join(' · ');
     $('pTitle').textContent = multi ? NAMES[ps.qty] : W[shownP(0)].t;
