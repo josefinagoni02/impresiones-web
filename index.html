@@ -179,7 +179,7 @@ nav.main a[aria-current="page"]{color:var(--ink);box-shadow:inset 0 -1.5px 0 var
   .cat-map .map.xon .pin{cursor:pointer}
 }
 @media (hover:none){.xh{display:none!important}}
-.mapttl,.mbar{display:none}
+.mapttl,.mbar,.backmap{display:none}
 @media (max-width:1100px){#v-catalogo{grid-template-columns:230px minmax(0,1fr) 330px}.ficha h2{font-size:44px}}
 @media (max-width:900px){
   #v-catalogo{display:flex;flex-direction:column;height:auto;min-height:0}
@@ -206,6 +206,7 @@ nav.main a[aria-current="page"]{color:var(--ink);box-shadow:inset 0 -1.5px 0 var
   .center.is-map .mapttl{display:block;position:absolute;left:16px;top:12px;z-index:4;font-family:var(--display);font-size:38px;line-height:1;letter-spacing:-.01em;pointer-events:none;text-shadow:0 0 16px #efeae1,0 0 5px #efeae1}
   .center.is-map .map{top:0!important}
   .maphint{display:none}
+  .ficha .backmap{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;height:36px;padding:0 14px;border-radius:99px;border:1px solid var(--line);background:var(--paper);font-size:13px;color:var(--ink);margin-bottom:-4px}
   .viewtoggle{position:relative;right:auto;top:auto;margin:14px 16px 0;display:inline-flex}
   .center.is-map .map{top:66px}
   .grid{padding-top:16px!important}
@@ -806,7 +807,7 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
       ? `<div style="display:flex;flex-direction:column;gap:8px">${w.serie ? `<span class="eyebrow">Serie ${esc(w.serie)}</span>` : ''}<h2>${esc(w.t)}</h2>${place}</div>`
       : `<div style="display:flex;flex-direction:column;gap:8px">${meta}<h2>${esc(w.t)}</h2>${place}</div>`;
     const tags = mapv ? '' : `<div class="tags"><span>Serie ${esc(w.serie || '—')}</span>${w.moods.map((m) => `<span>· ${esc(m)}</span>`).join('')}</div>`;
-    $('ficha').innerHTML = `${mapv ? `<div class="pictop">${meta}${pic}</div>` : pic}${group}
+    $('ficha').innerHTML = `${mapv ? '<button class="backmap" data-backmap aria-label="Volver al mapa"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Volver al mapa</button>' : ''}${mapv ? `<div class="pictop">${meta}${pic}</div>` : pic}${group}
       ${head}
       ${w.text ? `<p class="phrase">“${esc(w.text)}”</p>` : ''}${story}
       ${tags}
@@ -857,17 +858,19 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
   $('vGrid').onclick = () => setView('grid');
   $('q').addEventListener('input', (e) => { cs.q = e.target.value.trim().toLowerCase(); renderC(); });
   $('v-catalogo').addEventListener('click', (e) => {
+    if (e.target.closest('[data-backmap]')) { slowScroll(Math.max(0, $('center').getBoundingClientRect().top + window.scrollY - hdrH()), 1200); return; }
     const t = e.target.closest('[data-serie],[data-tone],[data-cl],[data-work],[data-pick],[data-try],[data-zoom]'); if (!t) return;
     if (t.dataset.serie) cs.serie = +t.dataset.serie;
     else if (t.dataset.tone) cs.tone = +t.dataset.tone;
     else if (t.dataset.cl) {
       const c = lastClusters[+t.dataset.cl]; if (!c) return; stopAt = null;
       cs.sel = c.hits.includes(cs.sel) && c.ps.length === 1 ? c.hits[(c.hits.indexOf(cs.sel) + 1) % c.hits.length] : c.hits[0]; cs.hover = null;
-      const toFicha = () => setTimeout(() => slowScroll($('ficha').getBoundingClientRect().top + window.scrollY - hdrH() - 8, 1100), 120);
-      if (c.farSingle) { animateTo({ z: 2.4, cx: toLon(c.x), cy: toLat(c.y) }); if (mob()) toFicha(); }
+      // en celular: primero se acerca el mapa y después baja despacio hasta las fotos
+      const zooms = c.farSingle || c.canRegion || c.ps.length > 1;
+      if (c.farSingle) animateTo({ z: 2.4, cx: toLon(c.x), cy: toLat(c.y) });
       else if (c.canRegion) animateTo({ z: Math.max(2.4, mv.z * 1.6), cx: toLon(c.x), cy: toLat(c.y) });
       else if (c.ps.length > 1) fitPlaces(c.ps);
-      else if (mob()) toFicha();
+      if (mob()) setTimeout(() => slowScroll($('ficha').getBoundingClientRect().top + window.scrollY - hdrH() - 8, 1200), zooms ? 650 : 120);
     }
     else if (t.dataset.work) { cs.sel = +t.dataset.work; cs.hover = null; if (cs.view === 'grid') { renderC(); openLb(cs.sel, gridIds()); return; } if (mob()) setTimeout(() => $('ficha').scrollIntoView({ behavior: 'smooth' }), 30); }
     else if (t.dataset.pick) { cs.sel = +t.dataset.pick; cs.hover = null; stopAt = groupOf(cs.sel).key; }
