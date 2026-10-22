@@ -179,6 +179,7 @@ nav.main a[aria-current="page"]{color:var(--ink);box-shadow:inset 0 -1.5px 0 var
   .cat-map .map.xon .pin{cursor:pointer}
 }
 @media (hover:none){.xh{display:none!important}}
+.mapttl,.mbar{display:none}
 @media (max-width:1100px){#v-catalogo{grid-template-columns:230px minmax(0,1fr) 330px}.ficha h2{font-size:44px}}
 @media (max-width:900px){
   #v-catalogo{display:flex;flex-direction:column;height:auto;min-height:0}
@@ -193,7 +194,18 @@ nav.main a[aria-current="page"]{color:var(--ink);box-shadow:inset 0 -1.5px 0 var
   .fgroup .eyebrow{display:none}
   .count{margin-top:0}
   .center{height:auto}
-  .center.is-map{height:min(60vh,560px)}
+  .center.is-map{height:min(62vh,560px)}
+  #v-catalogo .center{order:1}#v-catalogo .filters{order:2}#v-catalogo .ficha{order:3}
+  #v-catalogo:not(.cat-map) .filters{order:0}
+  .filters h1{display:none}
+  .filters .mbar{display:flex;align-items:center;justify-content:space-between;gap:10px;order:0}
+  .filters .fpanel.on{order:1}
+  .filters .intro{order:2}
+  .filters .intro p{font-size:13px;color:var(--muted)}
+  .mbar .viewtoggle{position:static;margin:0}
+  .center.is-map .mapttl{display:block;position:absolute;left:16px;top:12px;z-index:4;font-family:var(--display);font-size:38px;line-height:1;letter-spacing:-.01em;pointer-events:none;text-shadow:0 0 16px #efeae1,0 0 5px #efeae1}
+  .center.is-map .map{top:0!important}
+  .maphint{display:none}
   .viewtoggle{position:relative;right:auto;top:auto;margin:14px 16px 0;display:inline-flex}
   .center.is-map .map{top:66px}
   .grid{padding-top:16px!important}
@@ -254,6 +266,8 @@ nav.main a[aria-current="page"]{color:var(--ink);box-shadow:inset 0 -1.5px 0 var
 .opt[aria-pressed="true"] .s{box-shadow:0 0 0 3px #fdfbf7,0 0 0 5px var(--ink)}
 .opt input[type=color]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:0;padding:0}
 .tray .hint{font-size:12px;color:var(--muted)}
+.chip .sh{display:none}.bartgl{display:none}
+@media (max-width:900px){.chip .sh{display:inline}}
 .tray .rot{display:flex;align-items:center;gap:6px}
 .round{width:44px;height:44px;border-radius:50%;border:1px solid rgba(0,0,0,.16);display:flex;align-items:center;justify-content:center}
 .pside{border-left:1px solid var(--line);background:var(--card);display:flex;flex-direction:column;min-height:0}
@@ -283,7 +297,7 @@ nav.main a[aria-current="page"]{color:var(--ink);box-shadow:inset 0 -1.5px 0 var
   .stage{height:auto;overflow:visible;display:flex;flex-direction:column}
   .stage .head{position:static;padding:20px 16px 0;max-width:none}
   .stage .head h1{font-size:40px}
-  .wallarea{position:relative;top:auto;bottom:auto;height:clamp(250px,calc(100svh - 430px),520px);min-height:0;padding:10px 0}
+  .wallarea{position:relative;top:auto;bottom:auto;height:clamp(220px,calc(100svh - 490px),520px);min-height:0;padding:10px 0}
   .dock{position:static;flex-wrap:wrap;padding:0 12px 14px;justify-content:center;gap:8px}
   .dgroup .eyebrow{display:none}
   .pill .seg2{height:36px;padding:0 12px;font-size:13px}
@@ -296,6 +310,20 @@ nav.main a[aria-current="page"]{color:var(--ink);box-shadow:inset 0 -1.5px 0 var
   .bar .sec{padding:0 10px;gap:7px}
   .bar .sec .sl small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
   .bar .sec .sl b{font-size:13px}
+  .bar .sec .om{display:none}
+  .dock .bartgl{order:2;width:100%;display:flex;align-items:center;gap:12px;padding:10px 16px;border-radius:18px;text-align:left}
+  .bartgl .sl{display:flex;flex-direction:column;min-width:0;flex:1;line-height:1.15}
+  .bartgl .sl small{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .bartgl .sl b{font-weight:400;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .bartgl .tg{display:flex;align-items:center;gap:4px;font-size:13px;color:var(--muted);flex-shrink:0}
+  .bartgl .tg svg{transform:rotate(180deg);transition:transform .3s}.bartgl[aria-expanded="true"] .tg svg{transform:none}
+  .bartgl[aria-expanded="true"]{border-radius:18px 18px 0 0;box-shadow:none;padding-bottom:4px}
+  .stage.barc .bar{display:none}
+  .bartgl[aria-expanded="true"] + .bar{border-radius:0 0 20px 20px;margin-top:-8px}
+  .stage.barc .wallarea{height:clamp(270px,calc(100svh - 380px),560px)}
+  .tray .opts{flex-wrap:nowrap}
+  .tray .chip{padding:0 11px;font-size:13px;white-space:nowrap;flex-shrink:1;min-width:0}
+  .tray .chip .lg{display:none}
 }
 @media (max-width:400px){
   .pill .seg2{padding:0 10px;font-size:12.5px}
@@ -473,7 +501,8 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
 
 <main id="v-catalogo" aria-label="Catálogo">
   <aside class="filters">
-    <div style="display:flex;flex-direction:column;gap:10px">
+    <div class="mbar" id="mbar"></div>
+    <div class="intro" style="display:flex;flex-direction:column;gap:10px">
       <h1>Atlas</h1>
       <p>Un pedacito fotográfico del mundo en mi mapa personal.<br>Te invito a explorar cada lugar desde el mapa, o recorrer la grilla de norte a sur.</p>
     </div>
@@ -486,6 +515,7 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
     </div>
   </aside>
   <div class="center" id="center">
+    <div class="mapttl" aria-hidden="true">Atlas</div>
     <div class="seg viewtoggle" role="group" aria-label="Vista">
       <button id="vMap" aria-pressed="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg>Mapa</button>
       <button id="vGrid" aria-pressed="false"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="4" y="4" width="7" height="7"/><rect x="13" y="4" width="7" height="7"/><rect x="4" y="13" width="7" height="7"/><rect x="13" y="13" width="7" height="7"/></svg>Grilla N→S</button>
@@ -510,6 +540,7 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
       <div class="dgroup"><span class="eyebrow">Terminación</span>
         <div class="pill glass"><button class="seg2" data-a="finish" data-v="print">Sin montaje</button><button class="seg2" data-a="finish" data-v="marco">Marco</button><button class="seg2" data-a="finish" data-v="canvas">Canvas</button></div>
       </div>
+      <button class="bartgl glass" id="barTgl" data-a="bartgl" aria-expanded="false" aria-controls="bar"></button>
       <div class="bar glass" id="bar"></div>
       <div class="dgroup right"><span class="eyebrow">Cuadros</span>
         <div class="qty glass">
@@ -832,10 +863,11 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
     else if (t.dataset.cl) {
       const c = lastClusters[+t.dataset.cl]; if (!c) return; stopAt = null;
       cs.sel = c.hits.includes(cs.sel) && c.ps.length === 1 ? c.hits[(c.hits.indexOf(cs.sel) + 1) % c.hits.length] : c.hits[0]; cs.hover = null;
-      if (c.farSingle) animateTo({ z: 2.4, cx: toLon(c.x), cy: toLat(c.y) });
+      const toFicha = () => setTimeout(() => slowScroll($('ficha').getBoundingClientRect().top + window.scrollY - hdrH() - 8, 1100), 120);
+      if (c.farSingle) { animateTo({ z: 2.4, cx: toLon(c.x), cy: toLat(c.y) }); if (mob()) toFicha(); }
       else if (c.canRegion) animateTo({ z: Math.max(2.4, mv.z * 1.6), cx: toLon(c.x), cy: toLat(c.y) });
       else if (c.ps.length > 1) fitPlaces(c.ps);
-      else if (mob()) setTimeout(() => $('ficha').scrollIntoView({ behavior: 'smooth' }), 30);
+      else if (mob()) toFicha();
     }
     else if (t.dataset.work) { cs.sel = +t.dataset.work; cs.hover = null; if (cs.view === 'grid') { renderC(); openLb(cs.sel, gridIds()); return; } if (mob()) setTimeout(() => $('ficha').scrollIntoView({ behavior: 'smooth' }), 30); }
     else if (t.dataset.pick) { cs.sel = +t.dataset.pick; cs.hover = null; stopAt = groupOf(cs.sel).key; }
@@ -1057,7 +1089,7 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
     document.querySelectorAll('[data-a="finish"]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.v === ps.finish));
     const fr = frameOf(), mt = matOf(), ed = EDGES.find((e) => e.id === ps.edge), or = ORIENTS.find((x) => x.id === ps.orient), o = curOpt();
     const cur = W[shownP(0)];
-    const sec = (id, sw, small, big) => `<button class="sec" data-a="open" data-v="${id}" aria-expanded="${ps.open === id}">${sw}<span class="sl"><small>${small}</small><b>${esc(big)}</b></span>${chev}</button>`;
+    const sec = (id, sw, small, big, raw) => `<button class="sec" data-a="open" data-v="${id}" aria-expanded="${ps.open === id}">${sw}<span class="sl"><small>${small}</small><b>${raw ? big : esc(big)}</b></span>${chev}</button>`;
     let h = '';
     if (ps.finish === 'marco') {
       h += sec('marco', `<span class="sw" style="background:${fr.bg}"></span>`, 'Marco', fr.label);
@@ -1065,10 +1097,14 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
     } else if (ps.finish === 'canvas') {
       h += sec('edge', `<span class="sw" style="border-radius:2px;background:${ps.edge === 'wrap' ? `url(${cur.sm}) center/cover` : ed.c}"></span>`, 'Borde del canvas', ed.label) + '<span class="vr"></span>';
     }
-    h += sec('format', `<span style="width:${or.icon[0]}px;height:${or.icon[1]}px;border:1.5px solid currentColor;border-radius:2px;flex-shrink:0"></span>`, ps.finish === 'marco' ? 'Medida del marco' : 'Medida', ps.other ? 'Otra medida' : `${or.label} · ${o.w}×${o.h}`);
+    h += sec('format', `<span style="width:${or.icon[0]}px;height:${or.icon[1]}px;border:1.5px solid currentColor;border-radius:2px;flex-shrink:0"></span>`, ps.finish === 'marco' ? 'Medida del marco' : 'Medida', ps.other ? 'Otra medida' : `<span class="om">${or.label} · </span>${o.w}×${o.h}`, true);
     const cr = ps.rot[ps.qty > 1 ? ps.active : 0];
     h += '<span class="vr"></span>' + sec('img', '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="1"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-8 9"/></svg>', 'Imagen', `${ps.fit === 'cover' ? 'Llenar' : 'Completa'} · ${cr}°`);
     $('bar').innerHTML = h;
+    const sum = ps.finish === 'marco' ? [`Marco ${fr.label.toLowerCase()}`, withMat() ? `paspartú ${mt.label.toLowerCase()}` : 'sin paspartú', ps.other ? 'otra medida' : `${o.w}×${o.h}`]
+      : ps.finish === 'canvas' ? ['Canvas', `borde ${ed.label.toLowerCase()}`, ps.other ? 'otra medida' : `${o.w}×${o.h}`] : ['Impresión', ps.other ? 'otra medida' : `${o.w}×${o.h}`];
+    $('barTgl').innerHTML = `<span class="sl"><small>Detalle del cuadro</small><b>${esc(sum.join(' · '))}</b></span><span class="tg">${ps.barOpen ? 'Cerrar' : 'Editar'}${chev}</span>`;
+    $('barTgl').setAttribute('aria-expanded', !!ps.barOpen); $('stage').classList.toggle('barc', !ps.barOpen);
     $('qn').textContent = ps.qty;
     const qb = document.querySelectorAll('[data-a="qty"]'); qb[0].disabled = ps.qty === 1; qb[1].disabled = ps.qty === 3;
     renderTray();
@@ -1094,7 +1130,7 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
       h = `<div class="opts">${ORIENTS.map((o) => `<button class="chip" data-a="orient" data-v="${o.id}" aria-pressed="${o.id === ps.orient}"><span style="width:${o.icon[0]}px;height:${o.icon[1]}px;border:1.5px solid currentColor;border-radius:2px"></span>${o.label}</button>`).join('')}</div>
         <span class="hint">${hint}</span>
         <div class="opts">${l.map((o, i) => `<button class="chip" data-a="size" data-v="${i}" aria-pressed="${!ps.other && i === Math.min(ps.size, l.length - 1)}">${o.w}×${o.h}</button>`).join('')}
-        <button class="chip" data-a="other" aria-pressed="${ps.other}">Otra medida</button></div>`;
+        <button class="chip" data-a="other" aria-pressed="${ps.other}"><span class="lg">Otra medida</span><span class="sh">Otro</span></button></div>`;
     } else if (ps.open === 'img') {
       const multi = ps.qty > 1, k = multi ? ps.active : 0, cr = ps.rot[k], g = geom[k] || { ox: 0, oy: 0 };
       const cx = g.ox > 1, cy = g.oy > 1, o = ps.off[k];
@@ -1192,15 +1228,16 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
     const b = e.target.closest('[data-a]'); if (!b) return;
     const a = b.dataset.a, v = b.dataset.v;
     if (a === 'open') { ps.open = ps.open === v ? null : v; renderDock(); return; }
+    if (a === 'bartgl') { ps.barOpen = !ps.barOpen; ps.open = null; renderDock(); renderPieces(); return; }
     ps.set = null;
     if (a === 'finish') { keepSize({ finish: v, other: false, open: ['marco', 'mat', 'edge'].includes(ps.open) ? null : ps.open }); renderP(); }
     else if (a === 'qty') { const q = Math.max(1, Math.min(3, ps.qty + +v)); up({ qty: q, active: Math.min(ps.active, q - 1) }); }
-    else if (a === 'frame') up({ frame: v });
-    else if (a === 'mat') { keepSize({ mat: v }); renderP(); }
-    else if (a === 'edge') up({ edge: v });
+    else if (a === 'frame') up({ frame: v, open: null });
+    else if (a === 'mat') { keepSize({ mat: v, open: null }); renderP(); }
+    else if (a === 'edge') up({ edge: v, open: null });
     else if (a === 'orient') { keepSize({ orient: v }); renderP(); }
-    else if (a === 'size') up({ size: +v, other: false });
-    else if (a === 'other') up({ other: true });
+    else if (a === 'size') up({ size: +v, other: false, open: null });
+    else if (a === 'other') up({ other: true, open: null });
     else if (a === 'fit') up({ fit: v });
     else if (a === 'rot') { const k = ps.qty > 1 ? ps.active : 0; ps.rot[k] = (ps.rot[k] + +v + 360) % 360; ps.off[k] = [0, 0]; up({}); }
     else if (a === 'nudge') { const [x, y] = v.split(',').map(Number); nudge(x * 0.25, y * 0.25); }
@@ -1280,6 +1317,13 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
     Promise.race([Promise.all(wait), new Promise((r) => setTimeout(r, 3500))]).then(() => setTimeout(() => $('loader').classList.add('done'), 250));
   }
 
+  // en celular: Mapa/Grilla y Filtros van juntos debajo del mapa
+  function placeCtl() {
+    const vt = document.querySelector('.viewtoggle'), fb = $('fbtn');
+    if (mob()) { if (vt.parentNode !== $('mbar')) $('mbar').append(vt, fb); }
+    else if (vt.parentNode === $('mbar')) { $('center').insertBefore(vt, $('map')); $('fpanel').before(fb); }
+  }
+  window.matchMedia('(max-width:900px)').addEventListener('change', placeCtl); placeCtl();
   renderAbout(); renderPrices(); setView('map'); route(); hideLoader();
 })();
 </script>
