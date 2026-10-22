@@ -159,7 +159,7 @@ nav.main a[aria-current="page"]{color:var(--ink);box-shadow:inset 0 -1.5px 0 var
 .xh.flip span{margin-left:-10px;transform:translateX(-100%)}
 .ficha .pictop{display:flex;flex-direction:column;gap:10px}
 .ficha .pic{overflow:hidden}
-.ficha .pic img.prev{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;opacity:1;transition:opacity .9s ease}
+.ficha .pic img.prev{pointer-events:none;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;opacity:1;transition:opacity .9s ease}
 .ficha .pic img.prev.out{opacity:0}
 .ficha .pic.kb img:not(.prev){animation:kb 4.4s ease-out both}
 @keyframes kb{from{transform:scale(1)}to{transform:scale(1.035)}}
@@ -206,6 +206,7 @@ nav.main a[aria-current="page"]{color:var(--ink);box-shadow:inset 0 -1.5px 0 var
   .center.is-map .mapttl{display:block;position:absolute;left:16px;top:12px;z-index:4;font-family:var(--display);font-size:38px;line-height:1;letter-spacing:-.01em;pointer-events:none;text-shadow:0 0 16px #efeae1,0 0 5px #efeae1}
   .center.is-map .map{top:0!important}
   .maphint{display:none}
+  .ficha .pictop .swipehint{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);text-align:center;margin-top:-8px}
   .ficha .backmap{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;height:36px;padding:0 14px;border-radius:99px;border:1px solid var(--line);background:var(--paper);font-size:13px;color:var(--ink);margin-bottom:-4px}
   .viewtoggle{position:relative;right:auto;top:auto;margin:14px 16px 0;display:inline-flex}
   .center.is-map .map{top:66px}
@@ -416,7 +417,8 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
 }
 @media (prefers-reduced-motion:reduce){#lb .sl,#lb .cap{transition:opacity .2s}#lb .sl.from-r,#lb .sl.from-l,#lb .sl.to-l,#lb .sl.to-r{transform:none;filter:none}}
 .grid .card .ph{cursor:zoom-in}
-.ficha .pic{cursor:zoom-in}
+.ficha .pic{cursor:zoom-in;touch-action:pan-y}
+.ficha .swipehint{display:none}
 /* tarjeta Tu cuadro */
 .quote{display:flex;gap:16px;align-items:center}
 .quote .qd{width:84px;height:84px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:var(--soft);border-radius:8px}
@@ -801,7 +803,7 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
     const story = w.story ? `<p class="story">${esc(w.story)}</p>` : '';
     const group = pl.ids.length > 1 ? `<div style="display:flex;flex-direction:column;gap:8px"><span class="eyebrow mono">${pl.ids.length} obras en ${esc(pl.short)}<span class="gcount">${pl.ids.indexOf(i) + 1}/${pl.ids.length}</span></span><div class="gstrip"><button class="gnav l" data-gnav="-1" aria-label="Anteriores">‹</button><div class="group">${pl.ids.map((k) => `<button data-pick="${k}" aria-pressed="${k === i}" aria-label="Ver ${esc(W[k].t)}"><img src="${W[k].sm}" alt="" loading="lazy"></button>`).join('')}</div><button class="gnav r" data-gnav="1" aria-label="Siguientes">›</button></div></div>` : '';
     const meta = `<span class="meta">N.º ${String(i + 1).padStart(2, '0')} · ${esc(w.coords)}</span>`;
-    const pic = `<button class="pic ld${fade ? ' kb' : ''}" data-zoom="${i}" aria-label="Ver ${esc(w.t)} en grande"><img src="${w.sm}" alt="${esc(w.t)}"></button>`;
+    const pic = `<button class="pic ld${fade ? ' kb' : ''}" data-zoom="${i}" aria-label="Ver ${esc(w.t)} en grande"><img src="${w.sm}" alt="${esc(w.t)}"></button>${mapv ? '<span class="swipehint">‹ Deslizá para ver más · tocá para agrandar ›</span>' : ''}`;
     const place = `<span class="place">${esc(w.place)}${w.year ? ' · ' + w.year : ''}${w.when ? ' · ' + esc(w.when) : ''}</span>`;
     const head = mapv
       ? `<div style="display:flex;flex-direction:column;gap:8px">${w.serie ? `<span class="eyebrow">Serie ${esc(w.serie)}</span>` : ''}<h2>${esc(w.t)}</h2>${place}</div>`
@@ -822,11 +824,15 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
     }
   }
   // grupo de la ficha: en el mapa, el pin que contiene la obra (país, región o lugar); si no, el lugar exacto
+  let fixedGroup = null; // el grupo del pin que se tocó: se mantiene aunque el mapa se acerque y los pines se separen
+  const nsSort = (ids) => { const o = gridIds(); return [...ids].sort((a, b) => (o.indexOf(a) + 1 || 1e9) - (o.indexOf(b) + 1 || 1e9)); }; // mismo orden que la grilla (norte → sur)
+  const mkGroup = (c) => { const ids = nsSort(c.hits); return { ids, short: c.label, key: ids.join(',') }; };
   function groupOf(i) {
+    if (fixedGroup && cs.view === 'map' && fixedGroup.ids.includes(i)) return fixedGroup;
     const c = cs.view === 'map' && lastClusters.find((c) => c.hits.includes(i));
     const pl = placeOf(i);
-    if (c && c.hits.length > pl.ids.length) return { ids: c.hits, short: c.label, key: c.hits.join(',') };
-    return { ids: pl.ids, short: pl.short, key: pl.ids.join(',') };
+    if (c && c.hits.length > pl.ids.length) return mkGroup(c);
+    const ids = nsSort(pl.ids); return { ids, short: pl.short, key: ids.join(',') };
   }
   // tira de miniaturas: una sola fila, flechas y difuminado cuando hay más
   let stripX = 0;
@@ -841,6 +847,28 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
     g.addEventListener('scroll', upd, { passive: true });
     st.querySelectorAll('.gnav').forEach((b) => { b.onclick = (e) => { e.stopPropagation(); g.scrollBy({ left: +b.dataset.gnav * g.clientWidth * 0.8 }); }; });
   }
+  // pasar de obra en la ficha (swipe en celular): primero dentro del lugar, después salta al lugar siguiente de norte a sur
+  function fichaStep(d) {
+    const i = shownC(), g = groupOf(i), seq = gridIds();
+    if (!seq.includes(i)) seq.unshift(i);
+    const n = seq[(seq.indexOf(i) + d + seq.length) % seq.length];
+    cs.sel = n; cs.hover = null;
+    if (g.ids.includes(n)) { stopAt = g.key; renderFicha(true); if (cs.view === 'map') renderPins(); return; }
+    // otro lugar: el mapa se mueve hasta ahí y la ficha toma el grupo de ese pin
+    fixedGroup = null; stopAt = null;
+    const pl = placeOf(n);
+    if (cs.view === 'map' && pl) {
+      animateTo({ z: Math.max(mv.z, 2.4), cx: pl.dlon, cy: pl.dlat });
+      setTimeout(() => { const c = lastClusters.find((c) => c.hits.includes(cs.sel)); if (c && c.hits.length > 1) fixedGroup = mkGroup(c); stopAt = groupOf(cs.sel).key; renderFicha(); renderPins(); }, 560);
+    }
+    renderFicha(true);
+  }
+  let fx0 = null, fy0 = 0;
+  $('ficha').addEventListener('touchstart', (e) => { if (!e.target.closest('.pic')) { fx0 = null; return; } fx0 = e.touches[0].clientX; fy0 = e.touches[0].clientY; }, { passive: true });
+  window.addEventListener('touchend', (e) => {
+    if (fx0 === null) return; const dx = e.changedTouches[0].clientX - fx0, dy = e.changedTouches[0].clientY - fy0; fx0 = null;
+    if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.3) { e.preventDefault(); fichaStep(dx < 0 ? 1 : -1); }
+  });
   const priceFrom = () => { const all = ['print', 'marco', 'marco_mat', 'canvas'].flatMap((k) => D.pricing[k].map((o) => o.p)); return `desde $${Math.min(...all).toLocaleString('es-AR')}`; };
   function renderC() { renderFilters(); if (cs.view === 'map') renderMap(); else renderGrid(); renderFicha(); }
   function setView(v) {
@@ -864,7 +892,8 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
     else if (t.dataset.tone) cs.tone = +t.dataset.tone;
     else if (t.dataset.cl) {
       const c = lastClusters[+t.dataset.cl]; if (!c) return; stopAt = null;
-      cs.sel = c.hits.includes(cs.sel) && c.ps.length === 1 ? c.hits[(c.hits.indexOf(cs.sel) + 1) % c.hits.length] : c.hits[0]; cs.hover = null;
+      fixedGroup = c.hits.length > 1 ? mkGroup(c) : null;
+      cs.sel = c.hits.includes(cs.sel) && c.ps.length === 1 ? c.hits[(c.hits.indexOf(cs.sel) + 1) % c.hits.length] : nsSort(c.hits)[0]; cs.hover = null;
       // en celular: primero se acerca el mapa y después baja despacio hasta las fotos
       const zooms = c.farSingle || c.canRegion || c.ps.length > 1;
       if (c.farSingle) animateTo({ z: 2.4, cx: toLon(c.x), cy: toLat(c.y) });
