@@ -848,27 +848,56 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
     st.querySelectorAll('.gnav').forEach((b) => { b.onclick = (e) => { e.stopPropagation(); g.scrollBy({ left: +b.dataset.gnav * g.clientWidth * 0.8 }); }; });
   }
   // pasar de obra en la ficha (swipe en celular): primero dentro del lugar, después salta al lugar siguiente de norte a sur
-  function fichaStep(d) {
+  // entrada de la foto nueva al deslizar: entra desde el costado, sin fundido encima de la anterior
+  function slideIn(d) {
+    const img = $('ficha').querySelector('.pic img'); if (!img) return;
+    img.style.transition = 'none'; img.style.transform = `translateX(${d * 42}%)`; img.style.opacity = '0';
+    requestAnimationFrame(() => requestAnimationFrame(() => { img.style.transition = 'transform .32s cubic-bezier(.2,.8,.2,1), opacity .26s ease'; img.style.transform = ''; img.style.opacity = ''; }));
+  }
+  function fichaStep(d, slide) {
+    const rf = (fade) => { if (slide) { renderFicha(false); slideIn(d); } else renderFicha(fade); };
     const i = shownC(), g = groupOf(i), seq = gridIds();
     if (!seq.includes(i)) seq.unshift(i);
     const n = seq[(seq.indexOf(i) + d + seq.length) % seq.length];
     cs.sel = n; cs.hover = null;
-    if (g.ids.includes(n)) { stopAt = g.key; renderFicha(true); if (cs.view === 'map') renderPins(); return; }
+    if (g.ids.includes(n)) { stopAt = g.key; rf(true); if (cs.view === 'map') renderPins(); return; }
     // otro lugar: el mapa se mueve hasta ahí y la ficha toma el grupo de ese pin
-    fixedGroup = null; stopAt = null;
+    const cw = W[n].country, cids = nsSort(W.map((w, k) => k).filter((k) => W[k].country === cw && match(W[k])));
+    fixedGroup = cids.length > 1 ? { ids: cids, short: cw, key: cids.join(',') } : null; stopAt = null;
     const pl = placeOf(n);
     if (cs.view === 'map' && pl) {
       animateTo({ z: Math.max(mv.z, 2.4), cx: pl.dlon, cy: pl.dlat });
-      setTimeout(() => { const c = lastClusters.find((c) => c.hits.includes(cs.sel)); if (c && c.hits.length > 1) fixedGroup = mkGroup(c); stopAt = groupOf(cs.sel).key; renderFicha(); renderPins(); }, 560);
+      setTimeout(() => { stopAt = groupOf(cs.sel).key; if (cs.sel === n) { const y = window.scrollY; renderFicha(); window.scrollTo(0, y); } renderPins(); }, 560);
     }
-    renderFicha(true);
+    rf(true);
   }
-  let fx0 = null, fy0 = 0;
-  $('ficha').addEventListener('touchstart', (e) => { if (!e.target.closest('.pic')) { fx0 = null; return; } fx0 = e.touches[0].clientX; fy0 = e.touches[0].clientY; }, { passive: true });
-  window.addEventListener('touchend', (e) => {
-    if (fx0 === null) return; const dx = e.changedTouches[0].clientX - fx0, dy = e.changedTouches[0].clientY - fy0; fx0 = null;
-    if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.3) { e.preventDefault(); fichaStep(dx < 0 ? 1 : -1); }
+  let fx0 = null, fy0 = 0, fdx = 0, fdir = null, fimg = null;
+  $('ficha').addEventListener('touchstart', (e) => {
+    if (!e.target.closest('.pic') || cs.view !== 'map') { fx0 = null; return; }
+    fx0 = e.touches[0].clientX; fy0 = e.touches[0].clientY; fdx = 0; fdir = null;
+    fimg = $('ficha').querySelector('.pic img'); if (fimg) fimg.style.transition = 'none';
+  }, { passive: true });
+  $('ficha').addEventListener('touchmove', (e) => {
+    if (fx0 === null || !fimg) return;
+    const dx = e.touches[0].clientX - fx0, dy = e.touches[0].clientY - fy0;
+    if (!fdir && Math.abs(dx) + Math.abs(dy) > 8) fdir = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+    if (fdir !== 'x') return;
+    e.preventDefault(); fdx = dx;
+    fimg.style.transform = `translateX(${dx}px) rotate(${dx / 60}deg)`; fimg.style.opacity = String(Math.max(0.35, 1 - Math.abs(dx) / 420));
+  }, { passive: false });
+  window.addEventListener('touchend', () => {
+    if (fx0 === null) return; fx0 = null; const img = fimg; fimg = null;
+    if (fdir !== 'x' || !img) return;
+    if (Math.abs(fdx) > 50) {
+      const d = fdx < 0 ? 1 : -1;
+      img.style.transition = 'transform .16s ease-in, opacity .16s ease-in';
+      img.style.transform = `translateX(${-d * 60}%) rotate(${-d * 3}deg)`; img.style.opacity = '0';
+      setTimeout(() => fichaStep(d, true), 140);
+    } else { img.style.transition = 'transform .25s cubic-bezier(.2,.8,.2,1), opacity .25s'; img.style.transform = ''; img.style.opacity = ''; }
+    fdir = null;
   });
+  // tras un swipe no se abre la foto en grande
+  $('ficha').addEventListener('click', (e) => { if (Math.abs(fdx) > 8 && e.target.closest('.pic')) { e.stopPropagation(); e.preventDefault(); fdx = 0; } }, true);
   const priceFrom = () => { const all = ['print', 'marco', 'marco_mat', 'canvas'].flatMap((k) => D.pricing[k].map((o) => o.p)); return `desde $${Math.min(...all).toLocaleString('es-AR')}`; };
   function renderC() { renderFilters(); if (cs.view === 'map') renderMap(); else renderGrid(); renderFicha(); }
   function setView(v) {
@@ -1356,6 +1385,8 @@ footer.bottom{padding:24px clamp(16px,3vw,48px) calc(24px + env(safe-area-inset-
     else if (vt.parentNode === $('mbar')) { $('center').insertBefore(vt, $('map')); $('fpanel').before(fb); }
   }
   window.matchMedia('(max-width:900px)').addEventListener('change', placeCtl); placeCtl();
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  if (!['#sobre', '#contacto', '#impresion', '#pedido'].includes(location.hash)) window.scrollTo(0, 0);
   renderAbout(); renderPrices(); setView('map'); route(); hideLoader();
 })();
 </script>
