@@ -147,5 +147,26 @@
   "h": 6000,
   "avg": "#8f9488",
   "photoId": "f8c31240c92ce5957bf332e34abf42ff"
+ },
+ "IMG_8691.jpg": {
+  "file": "img-8691",
+  "w": 6000,
+  "h": 4000,
+  "avg": "#8793aa",
+  "photoId": "2ef5bf1fe7be1f710fec19a29f3f4219"
+ },
+ "IMG_8676.jpg": {
+  "file": "img-8676",
+  "w": 4463,
+  "h": 2975,
+  "avg": "#030303",
+  "photoId": "5482b407ebf36e0732021756b2f2152a"
+ },
+ "IMG_8717.jpg": {
+  "file": "img-8717",
+  "w": 3789,
+  "h": 5683,
+  "avg": "#321f1d",
+  "photoId": "1b73914f6b818b92da4a6b92e052991d"
  }
 }
